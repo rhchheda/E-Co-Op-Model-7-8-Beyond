@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentors | E-Co-Op Tracker</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="title">E-Co-Op Tracker</div>
+      <div class="subtitle">C-SHINE &middot; KLE Technological University</div>
+    </div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="teams.html">Teams</a>
+      <a href="tasks.html">Tasks</a>
+      <a href="mentors.html" class="active">Mentors</a>
+      <a href="resources.html">Resources</a>
+    </nav>
+    <div class="foot">Data source: Google Sheet<br>See README for setup</div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Mentor Directory</h1>
+        <p>Faculty mentors (auto-derived from team assignments) and industry mentors supporting E-Co-Op.</p>
+      </div>
+      <div id="data-status">Loading data&hellip;</div>
+    </div>
+
+    <div class="card">
+      <h2>Faculty Mentors</h2>
+      <div id="faculty-table"></div>
+    </div>
+
+    <div class="card">
+      <h2>Industry Mentors</h2>
+      <div id="industry-table"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+(async function () {
+  const data = await Data.load();
+  setDataStatusEl(Data.getSource());
+
+  const facultyRows = data.facultyMentors.map((f) => `
+    <tr>
+      <td>${escapeHtml(f.name)}</td>
+      <td>${escapeHtml(f.phone)}</td>
+      <td>${escapeHtml(f.teams)}</td>
+      <td>${escapeHtml(f.count)}</td>
+    </tr>`).join("");
+  document.getElementById("faculty-table").innerHTML = data.facultyMentors.length
+    ? `<table><thead><tr><th>Name</th><th>Phone</th><th>Teams Mentored</th><th># Teams</th></tr></thead><tbody>${facultyRows}</tbody></table>`
+    : `<div class="empty-state">No faculty mentors yet.</div>`;
+
+  const industryRows = data.industryMentors.map((m) => `
+    <tr>
+      <td>${escapeHtml(m.name)}</td>
+      <td>${escapeHtml(m.industry)}</td>
+      <td>${escapeHtml(m.background)}</td>
+      <td>${escapeHtml(m.phone)}</td>
+      <td>${escapeHtml(m.email)}</td>
+      <td>${badge(m.willingness)}</td>
+    </tr>`).join("");
+  document.getElementById("industry-table").innerHTML = data.industryMentors.length
+    ? `<table><thead><tr><th>Name</th><th>Industry</th><th>Background</th><th>Phone</th><th>Email</th><th>Willingness</th></tr></thead><tbody>${industryRows}</tbody></table>`
+    : `<div class="empty-state">No industry mentors yet.</div>`;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teams | E-Co-Op Tracker</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="title">E-Co-Op Tracker</div>
+      <div class="subtitle">C-SHINE &middot; KLE Technological University</div>
+    </div>
+    <nav>
+      <a href="index.html">Overview</a>
+      <a href="teams.html" class="active">Teams</a>
+      <a href="tasks.html">Tasks</a>
+      <a href="mentors.html">Mentors</a>
+      <a href="resources.html">Resources</a>
+    </nav>
+    <div class="foot">Data source: Google Sheet<br>See README for setup</div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Team Directory</h1>
+        <p>All shortlisted E-Co-Op project teams, their faculty mentors, and where they stand.</p>
+      </div>
+      <div id="data-status">Loading data&hellip;</div>
+    </div>
+
+    <div class="card">
+      <div class="filters">
+        <input type="text" id="search" placeholder="Search project, student, mentor&hellip;">
+        <select id="dept-filter"><option value="">All Departments</option></select>
+        <select id="status-filter">
+          <option value="">All Statuses</option>
+          <option>Not Started</option>
+          <option>On Track</option>
+          <option>At Risk</option>
+          <option>Behind</option>
+          <option>Completed</option>
+        </select>
+      </div>
+      <div id="teams-table"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+let ALL_TEAMS = [];
+
+function renderTeams() {
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const dept = document.getElementById("dept-filter").value;
+  const status = document.getElementById("status-filter").value;
+
+  const filtered = ALL_TEAMS.filter((t) => {
+    if (dept && t.department !== dept) return false;
+    if (status && (t.status || "") !== status) return false;
+    if (q) {
+      const hay = [t.project, t.students, t.facultyMentor, t.department, t.description]
+        .join(" ").toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  if (!filtered.length) {
+    document.getElementById("teams-table").innerHTML = `<div class="empty-state">No teams match these filters.</div>`;
+    return;
+  }
+
+  const rows = filtered.map((t) => `
+    <tr>
+      <td>${escapeHtml(t.id)}</td>
+      <td>
+        <strong>${escapeHtml(t.project)}</strong><br>
+        <span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.department)}</span>
+      </td>
+      <td class="students-list">${escapeHtml(t.students)}</td>
+      <td>
+        ${escapeHtml(t.facultyMentor)}<br>
+        <span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.facultyPhone)}</span>
+      </td>
+      <td>${escapeHtml(t.endUsers)}</td>
+      <td><span class="tag-text ${excitementBadgeClass(t.excitement)}">${escapeHtml(t.excitement || "Not set")}</span></td>
+      <td>${badge(t.status)}</td>
+    </tr>`).join("");
+
+  document.getElementById("teams-table").innerHTML = `
+    <table>
+      <thead><tr><th>#</th><th>Project</th><th>Students</th><th>Faculty Mentor</th><th>End Users</th><th>Interest Level</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+(async function () {
+  const data = await Data.load();
+  setDataStatusEl(Data.getSource());
+  ALL_TEAMS = data.teams;
+
+  const depts = [...new Set(ALL_TEAMS.map((t) => t.department).filter(Boolean))].sort();
+  const deptSelect = document.getElementById("dept-filter");
+  depts.forEach((d) => {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = d;
+    deptSelect.appendChild(opt);
+  });
+
+  ["search", "dept-filter", "status-filter"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", renderTeams);
+    document.getElementById(id).addEventListener("change", renderTeams);
+  });
+
+  renderTeams();
+})();
+</script>
+</body>
+</html>

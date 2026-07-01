@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E-Co-Op Program Tracker | C-SHINE, KLE Tech</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="title">E-Co-Op Tracker</div>
+      <div class="subtitle">C-SHINE &middot; KLE Technological University</div>
+    </div>
+    <nav>
+      <a href="index.html" class="active">Overview</a>
+      <a href="teams.html">Teams</a>
+      <a href="tasks.html">Tasks</a>
+      <a href="mentors.html">Mentors</a>
+      <a href="resources.html">Resources</a>
+    </nav>
+    <div class="foot">Data source: Google Sheet<br>See README for setup</div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Program Overview</h1>
+        <p>Entrepreneurship Cohort Program (E-Co-Op) &mdash; bridging academic minor/capstone projects into a structured startup pipeline through C-SHINE.</p>
+      </div>
+      <div id="data-status">Loading data&hellip;</div>
+    </div>
+
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card"><div class="num" id="stat-teams">&ndash;</div><div class="label">Active Teams</div></div>
+      <div class="stat-card"><div class="num" id="stat-faculty">&ndash;</div><div class="label">Faculty Mentors</div></div>
+      <div class="stat-card"><div class="num" id="stat-industry">&ndash;</div><div class="label">Industry Mentors</div></div>
+      <div class="stat-card"><div class="num" id="stat-tasks">&ndash;</div><div class="label">Tasks Complete</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Cohort Framework</h2>
+      <div class="cohort-grid">
+        <div class="cohort">
+          <span class="tag">COHORT A</span>
+          <h3>Explore</h3>
+          <div class="when">Post-6th semester &middot; 1 semester</div>
+          <ul>
+            <li>Technical validation &amp; market discovery</li>
+            <li>10+ customer discovery interviews</li>
+            <li>Prototype refined with user feedback</li>
+            <li>Value proposition &amp; market sizing</li>
+          </ul>
+        </div>
+        <div class="cohort">
+          <span class="tag">COHORT B</span>
+          <h3>Build</h3>
+          <div class="when">Post-7th semester &middot; 1 semester</div>
+          <ul>
+            <li>MVP development, IP filing</li>
+            <li>Working MVP tested with real users</li>
+            <li>Provisional patent application</li>
+            <li>Investor-ready pitch deck</li>
+          </ul>
+        </div>
+        <div class="cohort">
+          <span class="tag">COHORT C</span>
+          <h3>Launch</h3>
+          <div class="when">Post-graduation &middot; 6&ndash;12 months</div>
+          <ul>
+            <li>Startup formation, funding</li>
+            <li>Company registration, first pilots</li>
+            <li>Revenue validation, seed funding</li>
+            <li>Team expansion, traction</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Teams by Department</h2>
+      <div id="dept-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <h2>Upcoming / Pending Tasks</h2>
+      <div id="upcoming-tasks"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script>
+(async function () {
+  const data = await Data.load();
+  setDataStatusEl(Data.getSource());
+
+  document.getElementById("stat-teams").textContent = data.teams.length;
+  document.getElementById("stat-faculty").textContent = data.facultyMentors.length;
+  document.getElementById("stat-industry").textContent = data.industryMentors.length;
+  const complete = data.tasks.filter((t) => (t.status || "").toLowerCase().includes("complete")).length;
+  document.getElementById("stat-tasks").textContent = `${complete} / ${data.tasks.length}`;
+
+  // Department breakdown
+  const byDept = {};
+  data.teams.forEach((t) => {
+    const d = t.department || "Unspecified";
+    byDept[d] = (byDept[d] || 0) + 1;
+  });
+  const max = Math.max(1, ...Object.values(byDept));
+  const deptHtml = Object.entries(byDept).map(([dept, count]) => `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+      <div style="width:220px;font-size:13px;color:var(--ink);flex-shrink:0;">${escapeHtml(dept)}</div>
+      <div style="flex:1;background:var(--brand-light);border-radius:6px;overflow:hidden;height:18px;">
+        <div style="width:${(count / max) * 100}%;background:var(--brand);height:100%;"></div>
+      </div>
+      <div style="width:24px;font-size:13px;color:var(--muted);text-align:right;">${count}</div>
+    </div>`).join("");
+  document.getElementById("dept-breakdown").innerHTML = deptHtml || `<div class="empty-state">No teams yet</div>`;
+
+  // Upcoming tasks: anything not complete
+  const pending = data.tasks.filter((t) => !(t.status || "").toLowerCase().includes("complete"));
+  const rows = pending.slice(0, 8).map((t) => `
+    <tr>
+      <td>${escapeHtml(t.activity)}</td>
+      <td>${escapeHtml(t.due)}</td>
+      <td>${escapeHtml(t.owner)}</td>
+      <td>${badge(t.status)}</td>
+    </tr>`).join("");
+  document.getElementById("upcoming-tasks").innerHTML = pending.length
+    ? `<table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`
+    : `<div class="empty-state">Nothing pending &mdash; all caught up.</div>`;
+})();
+</script>
+</body>
+</html>
