@@ -4,14 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>E-Co-Op Program Tracker | C-SHINE, KLE Tech</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-logo">E-<em>Co-Op</em> Tracker</div>
+  <div class="loading-tag">"Bridging projects into products"</div>
+  <div class="loading-bar-track"><div class="loading-bar-fill"></div></div>
+</div>
+
 <div class="layout">
   <aside class="sidebar">
     <div class="brand">
-      <div class="title">E-Co-Op Tracker</div>
+      <div class="title">E-<em>Co-Op</em> Tracker</div>
       <div class="subtitle">C-SHINE &middot; KLE Technological University</div>
+      <div class="gold-bar"></div>
     </div>
     <nav>
       <a href="index.html" class="active">Overview</a>
@@ -90,6 +99,10 @@
   </main>
 </div>
 
+<div class="sticky-footer">
+  <span>E-Co-Op Program &nbsp;<b>&middot;</b>&nbsp; C-SHINE, KLE Technological University &nbsp;<b>&middot;</b>&nbsp; Live Dashboard</span>
+</div>
+
 <script src="js/config.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
@@ -97,6 +110,7 @@
 (async function () {
   const data = await Data.load();
   setDataStatusEl(Data.getSource());
+  hideLoadingScreen();
 
   document.getElementById("stat-teams").textContent = data.teams.length;
   document.getElementById("stat-faculty").textContent = data.facultyMentors.length;

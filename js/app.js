@@ -38,3 +38,10 @@ function excitementBadgeClass(text) {
   if (s.includes("not sure") || s.includes("no clarity")) return "bad";
   return "neutral";
 }
+
+function hideLoadingScreen() {
+  const el = document.getElementById("loading-screen");
+  if (!el) return;
+  el.classList.add("hidden");
+  setTimeout(() => { el.style.display = "none"; }, 500);
+}
