@@ -78,7 +78,8 @@ function renderTeams() {
     if (dept && t.department !== dept) return false;
     if (status && (t.status || "") !== status) return false;
     if (q) {
-      const hay = [t.project, t.students, t.facultyMentor, t.department, t.description]
+      const studentHay = (t.students || []).map((s) => `${s.name} ${s.srn}`).join(" ");
+      const hay = [t.project, studentHay, t.facultyMentor, t.department, t.description]
         .join(" ").toLowerCase();
       if (!hay.includes(q)) return false;
     }
@@ -90,14 +91,23 @@ function renderTeams() {
     return;
   }
 
-  const rows = filtered.map((t) => `
+  const dupSet = duplicateSrnSet(ALL_TEAMS);
+  const rows = filtered.map((t) => {
+    const size = (t.students || []).length;
+    const isDup = teamHasDuplicate(t, dupSet);
+    return `
     <tr>
       <td>${escapeHtml(t.id)}</td>
       <td>
         <strong>${escapeHtml(t.project)}</strong><br>
         <span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.department)}</span>
       </td>
-      <td class="students-list">${escapeHtml(t.students)}</td>
+      <td class="students-list">${escapeHtml(studentsDisplayText(t))}
+        <div style="margin-top:6px;">
+          <span class="badge neutral">${size} student${size === 1 ? "" : "s"}</span>
+          ${isDup ? ' <span class="badge bad">&#9888; Duplicate SRN</span>' : ""}
+        </div>
+      </td>
       <td>
         ${escapeHtml(t.facultyMentor)}<br>
         <span style="color:var(--muted);font-size:12.5px;">${escapeHtml(t.facultyPhone)}</span>
@@ -105,7 +115,8 @@ function renderTeams() {
       <td>${escapeHtml(t.endUsers)}</td>
       <td><span class="tag-text ${excitementBadgeClass(t.excitement)}">${escapeHtml(t.excitement || "Not set")}</span></td>
       <td>${badge(t.status)}</td>
-    </tr>`).join("");
+    </tr>`;
+  }).join("");
 
   document.getElementById("teams-table").innerHTML = `
     <table>

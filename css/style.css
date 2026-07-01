@@ -443,6 +443,28 @@ tbody tr:hover { background: var(--cream); }
 }
 .resource-item .dl:hover { background: var(--gold-pale); border-color: var(--gold); }
 
+/* ---------- Funnel ---------- */
+.funnel-wrap { display: flex; flex-direction: column; gap: 6px; }
+.funnel-row {
+  display: grid; grid-template-columns: 160px 1fr 52px 52px; gap: 12px; align-items: center;
+  padding: 10px 16px; background: var(--card); border-radius: 10px; border: 1px solid var(--border);
+}
+.funnel-stage { font-size: 11px; font-weight: 600; color: #fff; padding: 4px 10px; border-radius: 20px; text-align: center; }
+.funnel-bar-wrap { height: 10px; background: rgba(13,27,62,.07); border-radius: 6px; overflow: hidden; }
+.funnel-bar { height: 100%; border-radius: 6px; background: linear-gradient(to right, var(--gold), var(--gold-light)); transition: width 1s ease; }
+.funnel-count { font-family: "Cormorant Garamond", serif; font-size: 19px; font-weight: 600; color: var(--brand); text-align: center; }
+.funnel-pct { font-size: 11px; color: var(--muted); text-align: center; }
+
+/* ---------- Insights ---------- */
+.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.insight-card { background: var(--card); border-radius: 12px; padding: 1.3rem; border: 1px solid var(--border); }
+.insight-card.dark { background: var(--brand); }
+.insight-icon { font-size: 22px; margin-bottom: .6rem; }
+.insight-title { font-size: 13.5px; font-weight: 600; color: var(--brand); margin-bottom: .4rem; }
+.insight-card.dark .insight-title { color: #fff; }
+.insight-text { font-size: 12.5px; color: var(--muted); line-height: 1.6; }
+.insight-card.dark .insight-text { color: rgba(255,255,255,.6); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 820px) {
   .layout { flex-direction: column; }
@@ -452,4 +474,5 @@ tbody tr:hover { background: var(--cream); }
   .sidebar nav { flex-direction: row; padding: 0; }
   .sidebar .foot, .sidebar .who { display: none; }
   .main { padding: 20px; }
+  .funnel-row { grid-template-columns: 110px 1fr 40px 40px; }
 }

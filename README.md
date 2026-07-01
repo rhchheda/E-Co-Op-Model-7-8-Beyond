@@ -32,11 +32,19 @@ portal/
    - Header rows are locked.
    - Status/dropdown columns have data validation (no free typing garbage values).
    - Status values are color-coded automatically (conditional formatting).
+   - **Teams** has 6 structured student slots (Name / SRN / Phone each), grouped by field type so formulas can reference simple ranges. A live **Team Size** formula counts filled slots, and a live **Duplicate SRN?** formula flags any SRN repeated within the same team *or* appearing on a different team — highlighted in red. See "A real duplicate this caught" below.
+   - **Tasks** due dates are stored as real dates (DD-MM-YYYY) wherever the original value was unambiguous, with live **Days Until Due** and **Overdue?** formula columns (overdue = past due and not marked Complete).
+   - **Overview** rolls up intelligence: total teams, mentors, tasks complete, overdue task count, teams missing a faculty mentor, duplicate SRNs found, and average team size — all formulas, always current.
    - `Faculty Mentors` is derived from `Teams` and is warning-protected (it's meant to stay auto-generated — edit mentor info via `Teams` instead).
+   - All formula columns (Team Size, Duplicate SRN?, Days Until Due, Overdue?) are pre-applied to 200 rows, so rows added later (by hand or via the admin app) compute automatically.
    - Google Sheets' built-in version history (File > Version history) is your auto-recover / undo safety net — nothing extra to configure.
 6. **File > Share > General access > Anyone with the link > Viewer.** This is required so the static site can read the data (it only ever reads, never writes). Add real editors (yourself, co-coordinators) by email with Editor access separately — that's unaffected by the link-sharing setting.
 
 ⚠️ Re-running `setupWorkbook()` **rebuilds every tab from scratch** — only do this before you've started editing real data by hand, not after.
+
+### A real duplicate this caught
+
+The Duplicate SRN? formula (and the portal's own duplicate check) flagged that **Aditya Naik** (team "AI-Enabled eCommerce for Retailers") and **Sushant Maheshwari** (team "Integrated academic performance monitoring system") share the exact same SRN, `01FE23BCS211`, in the original `Final list of E-Co-Op teams.xlsx`. That's almost certainly a typo on one of the two rows — worth fixing in the sheet once it's set up.
 
 ### Two dates worth double-checking
 

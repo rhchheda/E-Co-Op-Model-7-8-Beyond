@@ -23,12 +23,6 @@ const Data = (() => {
     });
   }
 
-  function studentsToText(students) {
-    return students
-      .map((s) => `${s.name} (${s.srn}${s.phone ? ", " + s.phone : ""})`)
-      .join("\n");
-  }
-
   function fallbackTeams(seed) {
     return seed.teams.map((t) => {
       const mentors = (t.facultyMentor || "").split("\n").filter(Boolean);
@@ -47,7 +41,7 @@ const Data = (() => {
         id: t.id,
         department: t.department,
         project: t.project,
-        students: studentsToText(t.students),
+        students: t.students.slice(0, 6),
         facultyMentor: names.join(", "),
         facultyPhone: phones.join(", "),
         endUsers: t.endUsers,
@@ -91,21 +85,32 @@ const Data = (() => {
     }));
   }
 
+  const MAX_STUDENTS = 6;
+
   function mapSheetTeams(rows) {
     return rows
       .filter((r) => r["ID"] !== "" && r["ID"] !== undefined)
-      .map((r) => ({
-        id: r["ID"],
-        department: r["Department"],
-        project: r["Project Name"],
-        students: r["Students (Name / SRN / Phone)"],
-        facultyMentor: r["Faculty Mentor"],
-        facultyPhone: r["Faculty Phone"],
-        endUsers: r["End Users"],
-        description: r["Description"],
-        excitement: r["Excitement / Interest"],
-        status: r["Team Status"],
-      }));
+      .map((r) => {
+        const students = [];
+        for (let i = 1; i <= MAX_STUDENTS; i++) {
+          const name = r[`Student ${i} Name`];
+          if (name && String(name).trim()) {
+            students.push({ name: name, srn: r[`Student ${i} SRN`] || "", phone: r[`Student ${i} Phone`] || "" });
+          }
+        }
+        return {
+          id: r["ID"],
+          department: r["Department"],
+          project: r["Project Name"],
+          students: students,
+          facultyMentor: r["Faculty Mentor"],
+          facultyPhone: r["Faculty Phone"],
+          endUsers: r["End Users"],
+          description: r["Description"],
+          excitement: r["Excitement / Interest"],
+          status: r["Team Status"],
+        };
+      });
   }
 
   function mapSheetTasks(rows) {

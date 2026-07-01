@@ -88,6 +88,12 @@
     </div>
 
     <div class="card">
+      <h2>Program Funnel</h2>
+      <p id="funnel-sub" style="color:var(--muted);font-size:12.5px;margin:-6px 0 14px;"></p>
+      <div class="funnel-wrap" id="funnel-wrap"></div>
+    </div>
+
+    <div class="card">
       <h2>Teams by Department</h2>
       <div id="dept-breakdown"></div>
     </div>
@@ -95,6 +101,11 @@
     <div class="card">
       <h2>Upcoming / Pending Tasks</h2>
       <div id="upcoming-tasks"></div>
+    </div>
+
+    <div class="card">
+      <h2>Key Insights</h2>
+      <div class="insights-grid" id="insights-grid"></div>
     </div>
   </main>
 </div>
@@ -147,6 +158,9 @@
   document.getElementById("upcoming-tasks").innerHTML = pending.length
     ? `<table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`
     : `<div class="empty-state">Nothing pending &mdash; all caught up.</div>`;
+
+  renderFunnel(data);
+  renderInsights(data);
 })();
 </script>
 </body>
