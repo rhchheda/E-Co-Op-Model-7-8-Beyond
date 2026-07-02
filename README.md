@@ -28,16 +28,18 @@ portal/
 2. **Extensions > Apps Script**. Delete the placeholder code.
 3. Paste in the entire contents of [`apps-script/Setup.gs`](apps-script/Setup.gs).
 4. Click **Run > setupWorkbook** (top toolbar). The first run will ask you to authorize — this is your own script running in your own sheet, so it's safe to approve.
-5. Switch back to the spreadsheet tab. You'll see 5 tabs, fully formatted and seeded with the real team/task/mentor data: **Overview, Teams, Tasks, Faculty Mentors, Industry Mentors**.
+5. Switch back to the spreadsheet tab. You'll see 7 tabs, fully formatted and seeded with the real team/task/mentor data: **Overview, Teams, Tasks, Evaluation, Surveys, Faculty Mentors, Industry Mentors**.
    - Header rows are locked.
    - Status/dropdown columns have data validation (no free typing garbage values).
    - Status values are color-coded automatically (conditional formatting).
-   - **Teams** has 6 structured student slots (Name / SRN / Phone each), grouped by field type so formulas can reference simple ranges. A live **Team Size** formula counts filled slots, and a live **Duplicate SRN?** formula flags any SRN repeated within the same team *or* appearing on a different team — highlighted in red. See "A real duplicate this caught" below.
+   - **Teams** has 6 structured student slots (Name / SRN / Phone each), grouped by field type so formulas can reference simple ranges, plus a **Faculty Mentor Email** and **Mentor Notes** column (used by the admin app's mentor self-service view and email reminders — see `admin-app/README.md`). A live **Team Size** formula counts filled slots, and a live **Duplicate SRN?** formula flags any SRN repeated within the same team *or* appearing on a different team — highlighted in red. See "A real duplicate this caught" below.
    - **Tasks** due dates are stored as real dates (DD-MM-YYYY) wherever the original value was unambiguous, with live **Days Until Due** and **Overdue?** formula columns (overdue = past due and not marked Complete).
-   - **Overview** rolls up intelligence: total teams, mentors, tasks complete, overdue task count, teams missing a faculty mentor, duplicate SRNs found, and average team size — all formulas, always current.
+   - **Evaluation** and **Surveys** start empty (no data existed for these in the original files) — populate them through the admin app. Evaluation tracks the real Stage 1 (5-criterion, 70/100 threshold) and Stage 2 (C-SHINE panel) scores per team; Surveys tracks Customer Insight Survey interview progress and faculty review status per team.
+   - **Overview** rolls up intelligence: total teams, mentors, tasks complete, overdue task count, teams missing a faculty mentor, duplicate SRNs found, average team size, teams that passed Stage 1, teams admitted at Stage 2, and surveys reviewed — all formulas, always current.
    - `Faculty Mentors` is derived from `Teams` and is warning-protected (it's meant to stay auto-generated — edit mentor info via `Teams` instead).
-   - All formula columns (Team Size, Duplicate SRN?, Days Until Due, Overdue?) are pre-applied to 200 rows, so rows added later (by hand or via the admin app) compute automatically.
+   - Formula columns (Team Size, Duplicate SRN?, Days Until Due, Overdue?, Stage 1 Total/Result, Survey Progress) are applied per-row — to the rows with real seeded data now, and automatically to any new row added through the admin app. They're deliberately *not* bulk pre-filled across empty rows, since that would make Sheets think those rows are "in use" and break Add for everything after them.
    - Google Sheets' built-in version history (File > Version history) is your auto-recover / undo safety net — nothing extra to configure.
+   - This portal (the public read-only site) currently displays Teams/Tasks/Faculty Mentors/Industry Mentors only — Evaluation and Surveys are visible in the admin app, not yet on this public dashboard. Ask if you want that added.
 6. **File > Share > General access > Anyone with the link > Viewer.** This is required so the static site can read the data (it only ever reads, never writes). Add real editors (yourself, co-coordinators) by email with Editor access separately — that's unaffected by the link-sharing setting.
 
 ⚠️ Re-running `setupWorkbook()` **rebuilds every tab from scratch** — only do this before you've started editing real data by hand, not after.
