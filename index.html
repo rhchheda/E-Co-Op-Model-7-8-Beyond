@@ -1299,7 +1299,7 @@
         } else {
           $("#loginError").textContent = err.message || "Could not sign in.";
           $("#loginScreen").classList.add("show");
-          showToast("Sign-in failed", err.message || "Check the password and try again.", "error");
+          showToast("Sign-in failed", `${err.message || "Check the password and try again."} If this was just changed, redeploy the Apps Script web app.`, "error");
         }
       } finally {
         $("#loading").classList.add("hidden");
