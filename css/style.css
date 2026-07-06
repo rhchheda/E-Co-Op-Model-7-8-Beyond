@@ -358,6 +358,16 @@ a { color: var(--gold); }
 .row-actions { display: flex; gap: 6px; white-space: nowrap; }
 
 /* ---------- Tables ---------- */
+.table-scroll {
+  max-height: 620px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.table-scroll table { border: none; }
+.table-scroll thead th { position: sticky; top: 0; z-index: 1; }
+
 table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 
 thead th {

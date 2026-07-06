@@ -100,10 +100,10 @@ function renderTasks() {
     </tr>`).join("");
 
   document.getElementById("tasks-table").innerHTML = `
-    <table>
+    <div class="table-scroll"><table>
       <thead><tr><th>#</th><th>Task</th><th>Due</th><th>Owner</th><th>Status</th><th>Outcome</th><th>Remarks</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
 }
 
 (async function () {

@@ -119,10 +119,10 @@ function renderTeams() {
   }).join("");
 
   document.getElementById("teams-table").innerHTML = `
-    <table>
+    <div class="table-scroll"><table>
       <thead><tr><th>#</th><th>Project</th><th>Students</th><th>Faculty Mentor</th><th>End Users</th><th>Interest Level</th><th>Status</th></tr></thead>
       <tbody>${rows}</tbody>
-    </table>`;
+    </table></div>`;
 }
 
 (async function () {

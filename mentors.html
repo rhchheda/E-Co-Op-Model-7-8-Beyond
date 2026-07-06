@@ -74,7 +74,7 @@
       <td>${escapeHtml(f.count)}</td>
     </tr>`).join("");
   document.getElementById("faculty-table").innerHTML = data.facultyMentors.length
-    ? `<table><thead><tr><th>Name</th><th>Phone</th><th>Teams Mentored</th><th># Teams</th></tr></thead><tbody>${facultyRows}</tbody></table>`
+    ? `<div class="table-scroll"><table><thead><tr><th>Name</th><th>Phone</th><th>Teams Mentored</th><th># Teams</th></tr></thead><tbody>${facultyRows}</tbody></table></div>`
     : `<div class="empty-state">No faculty mentors yet.</div>`;
 
   const industryRows = data.industryMentors.map((m) => `
@@ -87,7 +87,7 @@
       <td>${badge(m.willingness)}</td>
     </tr>`).join("");
   document.getElementById("industry-table").innerHTML = data.industryMentors.length
-    ? `<table><thead><tr><th>Name</th><th>Industry</th><th>Background</th><th>Phone</th><th>Email</th><th>Willingness</th></tr></thead><tbody>${industryRows}</tbody></table>`
+    ? `<div class="table-scroll"><table><thead><tr><th>Name</th><th>Industry</th><th>Background</th><th>Phone</th><th>Email</th><th>Willingness</th></tr></thead><tbody>${industryRows}</tbody></table></div>`
     : `<div class="empty-state">No industry mentors yet.</div>`;
 })();
 </script>
