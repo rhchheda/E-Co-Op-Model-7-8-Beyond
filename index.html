@@ -1,167 +1,937 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>E-Co-Op Program Tracker | C-SHINE, KLE Tech</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CohortOps Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0d1b3e;
+      --navy-2: #182b55;
+      --gold: #c9a84c;
+      --gold-2: #ead282;
+      --ink: #13203c;
+      --muted: #68758f;
+      --line: rgba(13, 27, 62, 0.12);
+      --paper: #ffffff;
+      --soft: #f5f1e8;
+      --wash: #eef3f8;
+      --green: #1f7a4d;
+      --red: #c24035;
+      --blue: #226da8;
+      --violet: #7251a5;
+      --shadow: 0 18px 45px rgba(13, 27, 62, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Outfit, system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+      min-height: 100vh;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      background: var(--navy);
+      color: white;
+    }
+    .loading.hidden { display: none; }
+    .loading-box { text-align: center; }
+    .loading-logo {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 42px;
+      font-weight: 600;
+    }
+    .loading-logo span { color: var(--gold); font-style: italic; }
+    .loading-text {
+      margin-top: 12px;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(13, 27, 62, 0.96);
+      color: white;
+      border-bottom: 1px solid rgba(201,168,76,0.24);
+      backdrop-filter: blur(10px);
+    }
+    .topbar-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 210px;
+    }
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(201,168,76,0.7);
+      display: grid;
+      place-items: center;
+      color: var(--gold-2);
+      font-family: "Cormorant Garamond", serif;
+      font-size: 21px;
+      font-weight: 600;
+      border-radius: 8px;
+    }
+    .brand-name {
+      font-weight: 700;
+      line-height: 1.05;
+    }
+    .brand-sub {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .nav button, .mode button, .icon-btn {
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.82);
+      min-height: 34px;
+      border-radius: 8px;
+      padding: 7px 11px;
+      font-size: 13px;
+    }
+    .nav button.active, .mode button.active {
+      background: var(--gold);
+      color: var(--navy);
+      border-color: var(--gold);
+      font-weight: 700;
+    }
+    .mode {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hero {
+      background: var(--navy);
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.07) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-inner {
+      position: relative;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 46px 18px 34px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+    }
+    .eyebrow {
+      color: var(--gold-2);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(38px, 7vw, 72px);
+      line-height: 0.95;
+      margin: 10px 0 10px;
+      letter-spacing: 0;
+    }
+    h1 em {
+      color: var(--gold-2);
+      font-style: italic;
+    }
+    .hero-copy {
+      color: rgba(255,255,255,0.65);
+      max-width: 720px;
+      line-height: 1.65;
+    }
+    .live {
+      border: 1px solid rgba(201,168,76,0.3);
+      padding: 14px;
+      min-width: 210px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+    }
+    .live-label {
+      color: rgba(255,255,255,0.5);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .live-value {
+      margin-top: 5px;
+      color: var(--gold-2);
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 18px 56px;
+    }
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .kpi {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 112px;
+      box-shadow: 0 10px 26px rgba(13,27,62,0.07);
+      text-align: left;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .kpi-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .kpi-value {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 42px;
+      line-height: 1;
+      margin-top: 9px;
+      color: var(--navy);
+    }
+    .kpi-sub {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .panel {
+      display: none;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel.active { display: block; }
+    .panel-head {
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(180deg, #fff, #fbfaf7);
+    }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+    .panel-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .toolbar {
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+    .field {
+      border: 1px solid var(--line);
+      background: white;
+      border-radius: 8px;
+      padding: 10px 11px;
+      min-height: 38px;
+      color: var(--ink);
+    }
+    .search { min-width: 260px; flex: 1; }
+    .primary {
+      border: 1px solid var(--gold);
+      background: var(--gold);
+      color: var(--navy);
+      border-radius: 8px;
+      padding: 10px 13px;
+      min-height: 38px;
+      font-weight: 700;
+    }
+    .ghost {
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--navy);
+      border-radius: 8px;
+      padding: 9px 12px;
+      min-height: 38px;
+      font-weight: 600;
+    }
+    .admin-only { display: none; }
+    body.admin .admin-only { display: inline-flex; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 18px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+    }
+    .card-top {
+      padding: 14px;
+      background: var(--navy);
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .card-title {
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 8px;
+      min-height: 24px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--gold-2);
+      white-space: nowrap;
+    }
+    .card-body { padding: 14px; }
+    .meta {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .meta b { color: var(--ink); }
+    .members {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .member {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      background: var(--wash);
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 14px 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: #f7f9fb;
+    }
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 4px 8px;
+      min-height: 24px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #edf5ef;
+      color: var(--green);
+    }
+    .status.pending { background: #fff6df; color: #8a6500; }
+    .status.blocked { background: #ffecec; color: var(--red); }
+
+    dialog {
+      border: 0;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      width: min(720px, calc(100vw - 26px));
+      padding: 0;
+    }
+    dialog::backdrop { background: rgba(13,27,62,0.5); }
+    .modal-head {
+      padding: 16px 18px;
+      color: white;
+      background: var(--navy);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .modal-title { font-weight: 700; }
+    .modal-body {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .modal-body label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .modal-body .wide { grid-column: 1 / -1; }
+    textarea.field { min-height: 86px; resize: vertical; }
+    .modal-actions {
+      padding: 14px 18px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .empty {
+      padding: 38px 18px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 1040px) {
+      .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero-inner { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .topbar-inner { align-items: flex-start; flex-direction: column; }
+      .nav { justify-content: flex-start; }
+      .kpis, .grid { grid-template-columns: 1fr; }
+      .modal-body { grid-template-columns: 1fr; }
+      .search { min-width: 100%; }
+      table { min-width: 760px; }
+      .table-scroll { overflow-x: auto; }
+    }
+  </style>
 </head>
 <body>
+  <script>
+    const GAS_URL = "PASTE_DEPLOYED_GAS_WEB_APP_URL_HERE";
+  </script>
 
-<div class="loading-screen" id="loading-screen">
-  <div class="loading-logo">E-<em>Co-Op</em> Tracker</div>
-  <div class="loading-tag">"Bridging projects into products"</div>
-  <div class="loading-bar-track"><div class="loading-bar-fill"></div></div>
-</div>
-
-<div class="layout">
-  <aside class="sidebar">
-    <div class="brand">
-      <div class="title">E-<em>Co-Op</em> Tracker</div>
-      <div class="subtitle">C-SHINE &middot; KLE Technological University</div>
-      <div class="gold-bar"></div>
+  <div class="loading" id="loading">
+    <div class="loading-box">
+      <div class="loading-logo">Cohort<span>Ops</span></div>
+      <div class="loading-text" id="loadingText">Connecting to Google Sheets</div>
     </div>
-    <nav>
-      <a href="index.html" class="active">Overview</a>
-      <a href="teams.html">Teams</a>
-      <a href="tasks.html">Tasks</a>
-      <a href="mentors.html">Mentors</a>
-      <a href="resources.html">Resources</a>
-    </nav>
-    <div class="foot">Data source: Google Sheet<br>See README for setup</div>
-  </aside>
+  </div>
 
-  <main class="main">
-    <div class="page-header">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="mark" id="portalMark">E</div>
+        <div>
+          <div class="brand-name" id="portalNameTop">E-Co-Op Portal</div>
+          <div class="brand-sub" id="portalSubTop">KLE-CTIE cohort operations</div>
+        </div>
+      </div>
+      <nav class="nav" id="nav">
+        <button class="active" data-panel="dashboard">Dashboard</button>
+        <button data-panel="teams">Teams</button>
+        <button data-panel="students">Students</button>
+        <button data-panel="faculty">Faculty</button>
+        <button data-panel="industry">Industry</button>
+        <button data-panel="tasks">Tasks</button>
+      </nav>
+      <div class="mode">
+        <button class="active" id="viewerBtn">Viewer</button>
+        <button id="adminBtn">Admin</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
       <div>
-        <h1>Program Overview</h1>
-        <p>Entrepreneurship Cohort Program (E-Co-Op) &mdash; bridging academic minor/capstone projects into a structured startup pipeline through C-SHINE.</p>
+        <div class="eyebrow" id="eyebrow">EE Lab - KLE-CTIE - CSHINE</div>
+        <h1 id="heroTitle">E-Co-Op <em>Portal</em></h1>
+        <div class="hero-copy" id="heroCopy">A live operating portal for teams, students, mentors, tasks, and program progress.</div>
       </div>
-      <div id="data-status">Loading data&hellip;</div>
-    </div>
-
-    <div class="stat-grid" id="stat-grid">
-      <div class="stat-card"><div class="num" id="stat-teams">&ndash;</div><div class="label">Active Teams</div></div>
-      <div class="stat-card"><div class="num" id="stat-faculty">&ndash;</div><div class="label">Faculty Mentors</div></div>
-      <div class="stat-card"><div class="num" id="stat-industry">&ndash;</div><div class="label">Industry Mentors</div></div>
-      <div class="stat-card"><div class="num" id="stat-tasks">&ndash;</div><div class="label">Tasks Complete</div></div>
-    </div>
-
-    <div class="card">
-      <h2>Cohort Framework</h2>
-      <div class="cohort-grid">
-        <div class="cohort">
-          <span class="tag">COHORT A</span>
-          <h3>Explore</h3>
-          <div class="when">Post-6th semester &middot; 1 semester</div>
-          <ul>
-            <li>Technical validation &amp; market discovery</li>
-            <li>10+ customer discovery interviews</li>
-            <li>Prototype refined with user feedback</li>
-            <li>Value proposition &amp; market sizing</li>
-          </ul>
-        </div>
-        <div class="cohort">
-          <span class="tag">COHORT B</span>
-          <h3>Build</h3>
-          <div class="when">Post-7th semester &middot; 1 semester</div>
-          <ul>
-            <li>MVP development, IP filing</li>
-            <li>Working MVP tested with real users</li>
-            <li>Provisional patent application</li>
-            <li>Investor-ready pitch deck</li>
-          </ul>
-        </div>
-        <div class="cohort">
-          <span class="tag">COHORT C</span>
-          <h3>Launch</h3>
-          <div class="when">Post-graduation &middot; 6&ndash;12 months</div>
-          <ul>
-            <li>Startup formation, funding</li>
-            <li>Company registration, first pilots</li>
-            <li>Revenue validation, seed funding</li>
-            <li>Team expansion, traction</li>
-          </ul>
-        </div>
+      <div class="live">
+        <div class="live-label">Live sheet update</div>
+        <div class="live-value" id="lastUpdated">Loading</div>
       </div>
     </div>
+  </section>
 
-    <div class="card">
-      <h2>Program Funnel</h2>
-      <p id="funnel-sub" style="color:var(--muted);font-size:12.5px;margin:-6px 0 14px;"></p>
-      <div class="funnel-wrap" id="funnel-wrap"></div>
-    </div>
+  <main>
+    <section id="dashboard" class="panel active">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Program Dashboard</div>
+          <div class="panel-sub">Click any KPI to open the matching operational window.</div>
+        </div>
+        <button class="primary admin-only" data-action="sync">Sync Sheet</button>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </section>
 
-    <div class="card">
-      <h2>Teams by Department</h2>
-      <div id="dept-breakdown"></div>
-    </div>
+    <section id="teams" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Teams</div>
+          <div class="panel-sub">Projects, departments, mentors, end users, and member composition.</div>
+        </div>
+        <button class="primary admin-only" data-create="team">Add Team</button>
+      </div>
+      <div class="toolbar">
+        <input class="field search" id="teamSearch" placeholder="Search project, department, mentor, end users" />
+        <select class="field" id="departmentFilter"></select>
+      </div>
+      <div class="grid" id="teamGrid"></div>
+    </section>
 
-    <div class="card">
-      <h2>Upcoming / Pending Tasks</h2>
-      <div id="upcoming-tasks"></div>
-    </div>
+    <section id="students" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Students</div>
+          <div class="panel-sub">Normalized roster with one row per student.</div>
+        </div>
+        <button class="primary admin-only" data-create="student">Add Student</button>
+      </div>
+      <div class="toolbar">
+        <input class="field search" id="studentSearch" placeholder="Search name, SRN, mobile, team" />
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>Name</th><th>SRN</th><th>Mobile</th><th>Department</th><th>Team</th><th></th></tr></thead><tbody id="studentRows"></tbody></table></div>
+    </section>
 
-    <div class="card">
-      <h2>Key Insights</h2>
-      <div class="insights-grid" id="insights-grid"></div>
-    </div>
+    <section id="faculty" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Faculty Mentors</div>
+          <div class="panel-sub">Faculty ownership and contact directory.</div>
+        </div>
+        <button class="primary admin-only" data-create="faculty">Add Faculty</button>
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>Name</th><th>Mobile</th><th>Email</th><th>Department</th><th>Teams</th><th></th></tr></thead><tbody id="facultyRows"></tbody></table></div>
+    </section>
+
+    <section id="industry" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Industry Mentors</div>
+          <div class="panel-sub">Industry network, background, and willingness.</div>
+        </div>
+        <button class="primary admin-only" data-create="industry">Add Industry Mentor</button>
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>Name</th><th>Industry</th><th>Background</th><th>Phone</th><th>Email</th><th>Willingness</th><th></th></tr></thead><tbody id="industryRows"></tbody></table></div>
+    </section>
+
+    <section id="tasks" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Tasks</div>
+          <div class="panel-sub">Program activity tracker with owner, date, status, outcome, and remarks.</div>
+        </div>
+        <button class="primary admin-only" data-create="task">Add Task</button>
+      </div>
+      <div class="toolbar">
+        <input class="field search" id="taskSearch" placeholder="Search task, owner, status, remarks" />
+        <select class="field" id="statusFilter">
+          <option value="">All statuses</option>
+          <option>Complete</option>
+          <option>Pending</option>
+          <option>Blocked</option>
+        </select>
+      </div>
+      <div class="table-scroll"><table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th><th>Outcome</th><th>Remarks</th><th></th></tr></thead><tbody id="taskRows"></tbody></table></div>
+    </section>
   </main>
-</div>
 
-<div class="sticky-footer">
-  <span>E-Co-Op Program &nbsp;<b>&middot;</b>&nbsp; C-SHINE, KLE Technological University &nbsp;<b>&middot;</b>&nbsp; Live Dashboard</span>
-</div>
-
-<script src="js/config.js"></script>
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-<script>
-(async function () {
-  const data = await Data.load();
-  setDataStatusEl(Data.getSource());
-  hideLoadingScreen();
-
-  document.getElementById("stat-teams").textContent = data.teams.length;
-  document.getElementById("stat-faculty").textContent = data.facultyMentors.length;
-  document.getElementById("stat-industry").textContent = data.industryMentors.length;
-  const complete = data.tasks.filter((t) => (t.status || "").toLowerCase().includes("complete")).length;
-  document.getElementById("stat-tasks").textContent = `${complete} / ${data.tasks.length}`;
-
-  // Department breakdown
-  const byDept = {};
-  data.teams.forEach((t) => {
-    const d = t.department || "Unspecified";
-    byDept[d] = (byDept[d] || 0) + 1;
-  });
-  const max = Math.max(1, ...Object.values(byDept));
-  const deptHtml = Object.entries(byDept).map(([dept, count]) => `
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-      <div style="width:220px;font-size:13px;color:var(--ink);flex-shrink:0;">${escapeHtml(dept)}</div>
-      <div style="flex:1;background:var(--brand-light);border-radius:6px;overflow:hidden;height:18px;">
-        <div style="width:${(count / max) * 100}%;background:var(--brand);height:100%;"></div>
+  <dialog id="recordDialog">
+    <form method="dialog" id="recordForm">
+      <div class="modal-head">
+        <div class="modal-title" id="modalTitle">Edit Record</div>
+        <button class="icon-btn" value="cancel" aria-label="Close">x</button>
       </div>
-      <div style="width:24px;font-size:13px;color:var(--muted);text-align:right;">${count}</div>
-    </div>`).join("");
-  document.getElementById("dept-breakdown").innerHTML = deptHtml || `<div class="empty-state">No teams yet</div>`;
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-actions">
+        <button class="ghost" value="cancel">Cancel</button>
+        <button class="primary" id="saveRecord" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
 
-  // Upcoming tasks: anything not complete
-  const pending = data.tasks.filter((t) => !(t.status || "").toLowerCase().includes("complete"));
-  const rows = pending.slice(0, 8).map((t) => `
-    <tr>
-      <td>${escapeHtml(t.activity)}</td>
-      <td>${escapeHtml(t.due)}</td>
-      <td>${escapeHtml(t.owner)}</td>
-      <td>${badge(t.status)}</td>
-    </tr>`).join("");
-  document.getElementById("upcoming-tasks").innerHTML = pending.length
-    ? `<table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`
-    : `<div class="empty-state">Nothing pending &mdash; all caught up.</div>`;
+  <script>
+    const state = {
+      config: {},
+      kpis: {},
+      teams: [],
+      students: [],
+      faculty: [],
+      industry: [],
+      tasks: [],
+      activePanel: "dashboard",
+      admin: false,
+      editType: "",
+      editRecord: null
+    };
 
-  renderFunnel(data);
-  renderInsights(data);
-})();
-</script>
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+    const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#039;" }[ch]));
+    const norm = (v) => String(v ?? "").toLowerCase().trim();
+
+    async function api(action, payload = {}) {
+      if (!GAS_URL || GAS_URL.includes("PASTE_DEPLOYED")) {
+        return demoData();
+      }
+      const url = `${GAS_URL}?action=${encodeURIComponent(action)}&t=${Date.now()}`;
+      if (action === "getPortalData") {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        return res.json();
+      }
+      const res = await fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ action, ...payload })
+      });
+      if (!res.ok) throw new Error(`API ${res.status}`);
+      return res.json();
+    }
+
+    async function loadPortal() {
+      try {
+        const data = await api("getPortalData");
+        Object.assign(state, data);
+        applyConfig();
+        renderAll();
+      } catch (err) {
+        $("#loadingText").textContent = "Could not connect. Showing demo structure.";
+        Object.assign(state, demoData());
+        applyConfig();
+        renderAll();
+      } finally {
+        $("#loading").classList.add("hidden");
+      }
+    }
+
+    function applyConfig() {
+      const c = state.config || {};
+      $("#portalNameTop").textContent = c.portalName || "E-Co-Op Portal";
+      $("#portalSubTop").textContent = c.portalSub || "KLE-CTIE cohort operations";
+      $("#portalMark").textContent = (c.portalName || "E").slice(0, 1).toUpperCase();
+      $("#eyebrow").textContent = c.eyebrow || "EE Lab - KLE-CTIE - CSHINE";
+      $("#heroTitle").innerHTML = `${escapeHtml(c.heroTitle || "E-Co-Op")} <em>${escapeHtml(c.heroEmphasis || "Portal")}</em>`;
+      $("#heroCopy").textContent = c.heroCopy || "A live operating portal for teams, students, mentors, tasks, and program progress.";
+      $("#lastUpdated").textContent = c.lastUpdated || new Date().toLocaleString();
+    }
+
+    function renderAll() {
+      renderKpis();
+      renderDepartmentFilter();
+      renderTeams();
+      renderStudents();
+      renderFaculty();
+      renderIndustry();
+      renderTasks();
+    }
+
+    function renderKpis() {
+      const k = state.kpis || {};
+      const cards = [
+        ["Total Teams", k.totalTeams || state.teams.length, "Open team window", "teams"],
+        ["Students", k.totalStudents || state.students.length, "Open student roster", "students"],
+        ["Departments", k.totalDepartments || new Set(state.teams.map(t => t.department)).size, "Department view", "teams"],
+        ["Faculty", k.totalFaculty || state.faculty.length, "Mentor directory", "faculty"],
+        ["Industry", k.totalIndustry || state.industry.length, "Industry directory", "industry"],
+        ["Pending Tasks", k.pendingTasks || state.tasks.filter(t => norm(t.status) !== "complete").length, "Task tracker", "tasks"]
+      ];
+      $("#kpis").innerHTML = cards.map(([label, value, sub, panel]) => `
+        <button class="kpi" data-open="${panel}">
+          <div class="kpi-label">${escapeHtml(label)}</div>
+          <div class="kpi-value">${escapeHtml(value)}</div>
+          <div class="kpi-sub">${escapeHtml(sub)}</div>
+        </button>
+      `).join("");
+    }
+
+    function renderDepartmentFilter() {
+      const deps = [...new Set(state.teams.map(t => t.department).filter(Boolean))].sort();
+      $("#departmentFilter").innerHTML = `<option value="">All departments</option>` + deps.map(d => `<option>${escapeHtml(d)}</option>`).join("");
+    }
+
+    function renderTeams() {
+      const q = norm($("#teamSearch")?.value);
+      const dep = $("#departmentFilter")?.value || "";
+      const rows = state.teams.filter(team => {
+        const text = norm([team.projectName, team.department, team.facultyMentorName, team.endUsers, team.status].join(" "));
+        return (!q || text.includes(q)) && (!dep || team.department === dep);
+      });
+      $("#teamGrid").innerHTML = rows.length ? rows.map(team => {
+        const members = state.students.filter(s => s.teamId === team.teamId);
+        return `
+          <article class="card">
+            <div class="card-top">
+              <div class="card-title">${escapeHtml(team.projectName || "Untitled Project")}</div>
+              <span class="tag">${escapeHtml(team.department || "Team")}</span>
+            </div>
+            <div class="card-body">
+              <div class="meta">
+                <div><b>Mentor:</b> ${escapeHtml(team.facultyMentorName || "-")}</div>
+                <div><b>End users:</b> ${escapeHtml(team.endUsers || "-")}</div>
+                <div><b>Status:</b> ${escapeHtml(team.status || "Active")}</div>
+              </div>
+              <div class="members">${members.map(m => `<span class="member">${escapeHtml(m.name)}</span>`).join("")}</div>
+            </div>
+            <div class="card-actions admin-only">
+              <button class="ghost" data-edit="team" data-id="${escapeHtml(team.teamId)}">Edit</button>
+              <button class="ghost" data-delete="team" data-id="${escapeHtml(team.teamId)}">Delete</button>
+            </div>
+          </article>
+        `;
+      }).join("") : `<div class="empty">No teams found.</div>`;
+    }
+
+    function renderStudents() {
+      const q = norm($("#studentSearch")?.value);
+      const rows = state.students.filter(s => {
+        const team = state.teams.find(t => t.teamId === s.teamId);
+        return !q || norm([s.name, s.srn, s.mobile, s.department, team?.projectName].join(" ")).includes(q);
+      });
+      $("#studentRows").innerHTML = rows.map(s => {
+        const team = state.teams.find(t => t.teamId === s.teamId);
+        return `<tr>
+          <td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.srn)}</td><td>${escapeHtml(s.mobile)}</td>
+          <td>${escapeHtml(s.department || team?.department || "")}</td><td>${escapeHtml(team?.projectName || s.teamId)}</td>
+          <td><span class="admin-only"><button class="ghost" data-edit="student" data-id="${escapeHtml(s.studentId)}">Edit</button></span></td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="6" class="empty">No students found.</td></tr>`;
+    }
+
+    function renderFaculty() {
+      $("#facultyRows").innerHTML = state.faculty.map(f => {
+        const count = state.teams.filter(t => t.facultyMentorId === f.mentorId || t.facultyMentorName === f.name).length;
+        return `<tr><td>${escapeHtml(f.name)}</td><td>${escapeHtml(f.mobile)}</td><td>${escapeHtml(f.email)}</td><td>${escapeHtml(f.department)}</td><td>${count}</td><td><span class="admin-only"><button class="ghost" data-edit="faculty" data-id="${escapeHtml(f.mentorId)}">Edit</button></span></td></tr>`;
+      }).join("") || `<tr><td colspan="6" class="empty">No faculty mentors found.</td></tr>`;
+    }
+
+    function renderIndustry() {
+      $("#industryRows").innerHTML = state.industry.map(m => `<tr>
+        <td>${escapeHtml(m.name)}</td><td>${escapeHtml(m.industry)}</td><td>${escapeHtml(m.background)}</td>
+        <td>${escapeHtml(m.phone)}</td><td>${escapeHtml(m.email)}</td><td>${escapeHtml(m.willingness)}</td>
+        <td><span class="admin-only"><button class="ghost" data-edit="industry" data-id="${escapeHtml(m.industryMentorId)}">Edit</button></span></td>
+      </tr>`).join("") || `<tr><td colspan="7" class="empty">No industry mentors found.</td></tr>`;
+    }
+
+    function renderTasks() {
+      const q = norm($("#taskSearch")?.value);
+      const status = $("#statusFilter")?.value || "";
+      const rows = state.tasks.filter(t => {
+        const text = norm([t.activity, t.owner, t.status, t.outcomes, t.remarks].join(" "));
+        return (!q || text.includes(q)) && (!status || t.status === status);
+      });
+      $("#taskRows").innerHTML = rows.map(t => {
+        const cls = norm(t.status) === "complete" ? "" : norm(t.status) === "blocked" ? "blocked" : "pending";
+        return `<tr>
+          <td>${t.detailsUrl ? `<a href="${escapeHtml(t.detailsUrl)}" target="_blank" rel="noreferrer">${escapeHtml(t.activity)}</a>` : escapeHtml(t.activity)}</td>
+          <td>${escapeHtml(t.dueDate)}</td><td>${escapeHtml(t.owner)}</td><td><span class="status ${cls}">${escapeHtml(t.status || "Pending")}</span></td>
+          <td>${escapeHtml(t.outcomes)}</td><td>${escapeHtml(t.remarks)}</td>
+          <td><span class="admin-only"><button class="ghost" data-edit="task" data-id="${escapeHtml(t.taskId)}">Edit</button></span></td>
+        </tr>`;
+      }).join("") || `<tr><td colspan="7" class="empty">No tasks found.</td></tr>`;
+    }
+
+    function openPanel(id) {
+      state.activePanel = id;
+      $$(".panel").forEach(p => p.classList.toggle("active", p.id === id));
+      $$(".nav button").forEach(b => b.classList.toggle("active", b.dataset.panel === id));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function setAdmin(on) {
+      if (on && !state.admin) {
+        const password = prompt("Enter admin password");
+        if (!password) return;
+        state.adminPassword = password;
+      }
+      state.admin = on;
+      document.body.classList.toggle("admin", on);
+      $("#viewerBtn").classList.toggle("active", !on);
+      $("#adminBtn").classList.toggle("active", on);
+    }
+
+    function openEditor(type, record = {}) {
+      if (!state.admin) return;
+      state.editType = type;
+      state.editRecord = record;
+      const schemas = {
+        team: [["teamId","Team ID"],["projectName","Project Name","wide"],["department","Department"],["facultyMentorName","Faculty Mentor"],["endUsers","End Users"],["status","Status"],["seventhSemTarget","7th Sem Target","wide"],["excitement","Excitement","wide"]],
+        student: [["studentId","Student ID"],["teamId","Team ID"],["name","Name"],["srn","SRN"],["mobile","Mobile"],["department","Department"]],
+        faculty: [["mentorId","Mentor ID"],["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
+        industry: [["industryMentorId","Industry Mentor ID"],["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
+        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Due Date"],["owner","Owner"],["status","Status"],["outcomes","Outcomes","wide"],["remarks","Remarks","wide"]]
+      };
+      $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
+      $("#modalBody").innerHTML = schemas[type].map(([key, label, wide]) => {
+        const val = escapeHtml(record[key] || "");
+        const isLong = ["activity","outcomes","remarks","excitement","seventhSemTarget","willingness"].includes(key);
+        return `<label class="${wide || ""}">${escapeHtml(label)}${isLong ? `<textarea class="field" name="${key}">${val}</textarea>` : `<input class="field" name="${key}" value="${val}" />`}</label>`;
+      }).join("");
+      $("#recordDialog").showModal();
+    }
+
+    async function saveRecord(evt) {
+      evt.preventDefault();
+      const form = new FormData($("#recordForm"));
+      const record = Object.fromEntries(form.entries());
+      const result = await api("upsertRecord", { type: state.editType, record, id: getRecordId(state.editType, state.editRecord), password: state.adminPassword });
+      if (!result.ok) return alert(result.error || "Could not save record");
+      $("#recordDialog").close();
+      Object.assign(state, await api("getPortalData"));
+      renderAll();
+    }
+
+    async function deleteRecord(type, id) {
+      if (!state.admin || !id) return;
+      if (!confirm("Delete this record?")) return;
+      const result = await api("deleteRecord", { type, id, password: state.adminPassword });
+      if (!result.ok) return alert(result.error || "Could not delete record");
+      Object.assign(state, await api("getPortalData"));
+      renderAll();
+    }
+
+    async function syncPortal() {
+      Object.assign(state, await api("getPortalData"));
+      applyConfig();
+      renderAll();
+    }
+
+    function getRecordId(type, record) {
+      const keys = { team:"teamId", student:"studentId", faculty:"mentorId", industry:"industryMentorId", task:"taskId" };
+      return record?.[keys[type]] || "";
+    }
+
+    document.addEventListener("click", (evt) => {
+      const nav = evt.target.closest("[data-panel]");
+      if (nav) openPanel(nav.dataset.panel);
+      const kpi = evt.target.closest("[data-open]");
+      if (kpi) openPanel(kpi.dataset.open);
+      const create = evt.target.closest("[data-create]");
+      if (create) openEditor(create.dataset.create, {});
+      const edit = evt.target.closest("[data-edit]");
+      if (edit) {
+        const rec = findRecord(edit.dataset.edit, edit.dataset.id);
+        openEditor(edit.dataset.edit, rec || {});
+      }
+      const del = evt.target.closest("[data-delete]");
+      if (del) deleteRecord(del.dataset.delete, del.dataset.id);
+      const action = evt.target.closest("[data-action]");
+      if (action?.dataset.action === "sync") syncPortal();
+    });
+    ["teamSearch","departmentFilter"].forEach(id => document.addEventListener("input", e => { if (e.target.id === id) renderTeams(); }));
+    document.addEventListener("input", e => {
+      if (e.target.id === "studentSearch") renderStudents();
+      if (e.target.id === "taskSearch" || e.target.id === "statusFilter") renderTasks();
+    });
+    $("#viewerBtn").addEventListener("click", () => setAdmin(false));
+    $("#adminBtn").addEventListener("click", () => setAdmin(true));
+    $("#saveRecord").addEventListener("click", saveRecord);
+
+    function demoData() {
+      return {
+        config: {
+          portalName: "E-Co-Op Portal",
+          portalSub: "Reusable cohort operations",
+          heroTitle: "E-Co-Op",
+          heroEmphasis: "Portal",
+          lastUpdated: "Demo mode"
+        },
+        kpis: {},
+        teams: [
+          { teamId:"T001", department:"Computer Science and Engineering", projectName:"Sintex Cleanliness Detection Using IoT and AI Model", facultyMentorName:"Geeta Sannakki", endUsers:"Apartment Complexes", status:"Active" },
+          { teamId:"T002", department:"Mechanical Engineering", projectName:"Camera based navigation system for visually impaired", facultyMentorName:"Gururaj Fattepur", endUsers:"Visually impaired users", status:"Active" }
+        ],
+        students: [
+          { studentId:"S001", teamId:"T001", name:"Subramanya Tiluvalli", srn:"01FE23BCS279", mobile:"9110607686", department:"Computer Science and Engineering" },
+          { studentId:"S002", teamId:"T001", name:"Praveen Angadi", srn:"01FE23BCS298", mobile:"9972436163", department:"Computer Science and Engineering" },
+          { studentId:"S003", teamId:"T002", name:"Student Member", srn:"01FE23BME001", mobile:"", department:"Mechanical Engineering" }
+        ],
+        faculty: [{ mentorId:"F001", name:"Geeta Sannakki", mobile:"9620161698", email:"", department:"Computer Science and Engineering" }],
+        industry: [{ industryMentorId:"I001", name:"Vaibhav", industry:"EARTKey", background:"Electronics", phone:"", email:"", willingness:"" }],
+        tasks: [{ taskId:"K001", activity:"Faculty mentors orientation", dueDate:"03-07-2026", owner:"SK and NK", status:"Complete", outcomes:"Orientation completed", remarks:"" }]
+      };
+    }
+
+    function findRecord(type, id) {
+      const lists = { team: state.teams, student: state.students, faculty: state.faculty, industry: state.industry, task: state.tasks };
+      const keys = { team:"teamId", student:"studentId", faculty:"mentorId", industry:"industryMentorId", task:"taskId" };
+      return (lists[type] || []).find(item => String(item[keys[type]]) === String(id));
+    }
+
+    loadPortal();
+  </script>
 </body>
 </html>
