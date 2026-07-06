@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CohortOps Portal</title>
+  <title>E-Co-Op Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -250,7 +250,7 @@
       background:
         linear-gradient(90deg, rgba(13,27,62,0.96) 0%, rgba(13,27,62,0.88) 43%, rgba(13,27,62,0.58) 72%, rgba(13,27,62,0.76) 100%),
         linear-gradient(180deg, rgba(13,27,62,0.1), rgba(13,27,62,0.34)),
-        url("../assets/eco-op-hero-banner.png") center / cover no-repeat,
+        var(--hero-image, url("../assets/eco-op-hero-banner.png")) center / cover no-repeat,
         var(--navy);
       color: white;
       position: relative;
@@ -813,7 +813,7 @@
       color: white;
       background:
         linear-gradient(90deg, rgba(13,27,62,0.96), rgba(13,27,62,0.78), rgba(13,27,62,0.6)),
-        url("../assets/eco-op-hero-banner.png") center / cover no-repeat;
+        var(--hero-image, url("../assets/eco-op-hero-banner.png")) center / cover no-repeat;
       display: grid;
       align-content: space-between;
       gap: 28px;
@@ -947,6 +947,7 @@
         -webkit-print-color-adjust: exact;
       }
       @page {
+        size: A4 landscape;
         margin: 12mm;
       }
     }
@@ -977,21 +978,21 @@
 </head>
 <body>
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbxT3d3mErXXA0Op8wVeVP6N0rtsItENoYRmWZMwyXakFf19mxsRSqVdQbA6okLk8LLh/exec";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyFct5uONb8QhxDNIMF9p2whsz3e_DdUgdbKFhiH69mQgF8MqqLLA4GYdBfCnUacohR/exec";
   </script>
 
   <div class="loading" id="loading">
     <div class="loading-box">
       <div class="loading-rings"><div class="loading-dot"></div></div>
-      <div class="loading-logo">Cohort<span>Ops</span></div>
+      <div class="loading-logo">E-Co-Op <span>Portal</span></div>
       <div class="loading-text" id="loadingText">Connecting to Google Sheets</div>
     </div>
   </div>
 
   <section class="login-screen" id="loginScreen">
     <div class="login-card">
-      <div class="login-title">Cohort<span>Ops</span></div>
-      <div class="login-copy">Sign in to view the live portal. Admin mode enables controlled updates to Google Sheets.</div>
+      <div class="login-title">E-Co-Op <span>Portal</span></div>
+      <div class="login-copy">Sign in to KLE Technological University - C-SHINE cohort operations. Admin mode enables controlled updates to Google Sheets.</div>
       <div class="login-tabs">
         <button class="active" id="loginViewer" type="button">Viewer</button>
         <button id="loginAdmin" type="button">Admin</button>
@@ -1010,7 +1011,7 @@
         <div class="mark" id="portalMark">E</div>
         <div>
           <div class="brand-name" id="portalNameTop">E-Co-Op Portal</div>
-          <div class="brand-sub" id="portalSubTop">KLE-CTIE cohort operations</div>
+          <div class="brand-sub" id="portalSubTop">KLE Technological University cohort operations</div>
         </div>
       </div>
       <nav class="nav" id="nav">
@@ -1034,7 +1035,7 @@
   <section class="hero">
     <div class="hero-inner">
       <div>
-        <div class="eyebrow" id="eyebrow">EE Lab - KLE-CTIE - CSHINE</div>
+        <div class="eyebrow" id="eyebrow">KLE Technological University - C-SHINE</div>
         <h1 id="heroTitle">E-Co-Op <em>Innovation Cohort Portal</em></h1>
         <div class="hero-copy" id="heroCopy">Entrepreneurship Cohort Program for bridging academic projects with customer discovery, MVP readiness, mentorship, and innovation pathways.</div>
         <div class="hero-pills">
@@ -1049,7 +1050,7 @@
         <div class="live-value" id="lastUpdated">Loading</div>
         <div class="live-program">
           <div><b>Focus</b> Customer insight · TRL readiness · MVP path</div>
-          <div><b>Powered by</b> EE Lab · KLE-CTIE · C-SHINE</div>
+          <div><b>Powered by</b> KLE Technological University · C-SHINE</div>
         </div>
       </div>
     </div>
@@ -1122,7 +1123,7 @@
       <div class="panel-head">
         <div>
           <div class="panel-title">Tasks</div>
-          <div class="panel-sub">Program activity tracker with owner, date, status, outcome, and remarks.</div>
+          <div class="panel-sub">Program schedule, reminder windows, owner, status, outcome, and remarks.</div>
         </div>
         <button class="primary admin-only" data-create="task">Add Task</button>
       </div>
@@ -1135,7 +1136,7 @@
           <option>Blocked</option>
         </select>
       </div>
-      <div class="table-scroll"><table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th><th>Outcome</th><th>Remarks</th><th></th></tr></thead><tbody id="taskRows"></tbody></table></div>
+      <div class="table-scroll"><table><thead><tr><th>Activity</th><th>Schedule</th><th>Owner</th><th>Status</th><th>Automation / Outcome</th><th>Remarks</th><th></th></tr></thead><tbody id="taskRows"></tbody></table></div>
     </section>
 
     <section id="resources" class="panel">
@@ -1309,14 +1310,21 @@
     function applyConfig() {
       const c = state.config || {};
       $("#portalNameTop").textContent = c.portalName || "E-Co-Op Portal";
-      $("#portalSubTop").textContent = c.portalSub || "KLE-CTIE cohort operations";
+      $("#portalSubTop").textContent = c.portalSub || "KLE Technological University cohort operations";
       $("#portalMark").textContent = (c.portalName || "E").slice(0, 1).toUpperCase();
-      $("#eyebrow").textContent = c.eyebrow || "EE Lab - KLE-CTIE - CSHINE";
+      $("#eyebrow").textContent = c.eyebrow || "KLE Technological University - C-SHINE";
       $("#heroTitle").innerHTML = `${escapeHtml(c.heroTitle || "E-Co-Op")} <em>${escapeHtml(c.heroEmphasis || "Innovation Cohort Portal")}</em>`;
       $("#heroCopy").textContent = c.heroCopy || "Entrepreneurship Cohort Program for bridging academic projects with customer discovery, MVP readiness, mentorship, and innovation pathways.";
+      applyHeroImage(c.heroImageUrl);
       const updated = c.lastUpdated || "--";
       $("#lastUpdated").textContent = updated;
       $("#footerUpdated").textContent = updated;
+    }
+
+    function applyHeroImage(url) {
+      const cleanUrl = String(url || "").trim();
+      if (!cleanUrl) return;
+      document.documentElement.style.setProperty("--hero-image", `url("${cleanUrl.replace(/"/g, "%22")}")`);
     }
 
     function renderAll() {
@@ -1498,9 +1506,8 @@
         <div class="pdf-cover">
           <div class="report-logos">
             <div class="report-logo">KLE</div>
-            <div class="report-logo">CTIE</div>
             <div class="report-logo">C-SHINE</div>
-            <div class="report-logo">EE LAB</div>
+            <div class="report-logo">KLE Tech</div>
           </div>
           <div>
             <div class="report-cover-title">E-Co-Op <em>Innovation Cohort Report</em></div>
@@ -1531,10 +1538,10 @@
           </section>
 
           <section class="report-block">
-            <h3>Task Progress</h3>
+            <h3>Automation Readiness</h3>
             <div class="report-list">
               ${Object.entries(taskStatus).map(([status,count]) => `<div><b>${escapeHtml(status || "Pending")}</b> · ${count} task(s)</div>`).join("") || `<div>No task data available.</div>`}
-              <div class="report-note">Pending and blocked tasks should be reviewed during the next cohort coordination meeting.</div>
+              <div class="report-note">Pending items should be mapped to reminder triggers, owner follow-ups, and completion windows before the next cohort coordination meeting.</div>
             </div>
           </section>
 
@@ -1567,9 +1574,9 @@
           </section>
 
           <section class="report-block">
-            <h3>Priority Task Snapshot</h3>
+            <h3>Program Reminder Snapshot</h3>
             <table class="report-table">
-              <thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th></tr></thead>
+              <thead><tr><th>Activity</th><th>Schedule</th><th>Owner</th><th>Status</th></tr></thead>
               <tbody>
                 ${activeTasks.map(t => `<tr><td>${escapeHtml(t.activity || "-")}</td><td>${escapeHtml(t.dueDate || "-")}</td><td>${escapeHtml(t.owner || "-")}</td><td>${escapeHtml(t.status || "Pending")}</td></tr>`).join("") || `<tr><td colspan="4">No pending tasks.</td></tr>`}
               </tbody>
@@ -1703,7 +1710,7 @@
         student: [["studentId","Student ID"],["teamId","Team ID"],["name","Name"],["srn","SRN"],["mobile","Mobile"],["department","Department"]],
         faculty: [["mentorId","Mentor ID"],["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
         industry: [["industryMentorId","Industry Mentor ID"],["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
-        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Due Date"],["owner","Owner"],["status","Status"],["outcomes","Outcomes","wide"],["remarks","Remarks","wide"]],
+        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Schedule"],["owner","Owner"],["status","Status"],["outcomes","Automation / Outcomes","wide"],["remarks","Remarks","wide"]],
         resource: [["resourceId","Resource ID"],["title","Title"],["category","Category"],["type","Type"],["url","URL","wide"],["owner","Owner"],["status","Status"]]
       };
       $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
@@ -1791,7 +1798,8 @@
       return {
         config: {
           portalName: "E-Co-Op Portal",
-          portalSub: "Reusable cohort operations",
+          portalSub: "KLE Technological University cohort operations",
+          eyebrow: "KLE Technological University - C-SHINE",
           heroTitle: "E-Co-Op",
           heroEmphasis: "Innovation Cohort Portal",
           heroCopy: "Entrepreneurship Cohort Program for bridging academic projects with customer discovery, MVP readiness, mentorship, and innovation pathways.",
@@ -1809,10 +1817,14 @@
         ],
         faculty: [{ mentorId:"F001", name:"Geeta Sannakki", mobile:"9620161698", email:"", department:"Computer Science and Engineering" }],
         industry: [{ industryMentorId:"I001", name:"Vaibhav", industry:"EARTKey", background:"Electronics", phone:"", email:"", willingness:"" }],
-        tasks: [{ taskId:"K001", activity:"Faculty mentors orientation", dueDate:"03-Jul-2026", owner:"SK and NK", status:"Complete", outcomes:"Orientation completed", remarks:"" }],
+        tasks: [
+          { taskId:"K001", activity:"Faculty mentors orientation and briefing", dueDate:"03-Jul-2026, 2:00 PM - 3:00 PM", owner:"Program Coordination Team", status:"Complete", outcomes:"Orientation completed; attendance and briefing notes ready for follow-up.", remarks:"Send calendar reminder, mark attendance, and share briefing deck." },
+          { taskId:"K002", activity:"Customer discovery sprint reminders", dueDate:"07-Jul-2026 to 09-Jul-2026", owner:"Faculty Mentors and Team Leads", status:"Pending", outcomes:"Automated daily nudges for survey completion, mentor check-ins, and evidence capture.", remarks:"Schedule morning reminder and evening progress check for each team." },
+          { taskId:"K003", activity:"MVP readiness and cohort review window", dueDate:"10-Aug-2026 to 25-Aug-2026", owner:"Program Coordination Team", status:"Pending", outcomes:"Reminder sequence for prototype progress, mentor review, final documentation, and report readiness.", remarks:"Trigger milestone reminders at start, midpoint, one week before close, and final day." }
+        ],
         resources: [
-          { resourceId:"R001", title:"Customer Insight Survey", category:"Survey", type:"PPTX", url:"assets/Customer_Insight_Survey.pptx", owner:"EE Lab", status:"Active" },
-          { resourceId:"R002", title:"Entrepreneurship Cohort Presentation", category:"Presentation", type:"PDF", url:"assets/Entrepreneurship_Cohort_Presentation.pdf", owner:"EE Lab", status:"Active" }
+          { resourceId:"R001", title:"Customer Insight Survey", category:"Survey", type:"PPTX", url:"assets/Customer_Insight_Survey.pptx", owner:"C-SHINE", status:"Active" },
+          { resourceId:"R002", title:"Entrepreneurship Cohort Presentation", category:"Presentation", type:"PDF", url:"assets/Entrepreneurship_Cohort_Presentation.pdf", owner:"C-SHINE", status:"Active" }
         ]
       };
     }
