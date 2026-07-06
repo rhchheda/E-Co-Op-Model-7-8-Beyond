@@ -23,6 +23,8 @@
       --red: #c24035;
       --blue: #226da8;
       --violet: #7251a5;
+      --cyan: #1b8a9a;
+      --rose: #be3455;
       --shadow: 0 18px 45px rgba(13, 27, 62, 0.12);
     }
 
@@ -33,6 +35,7 @@
       color: var(--ink);
       background: var(--soft);
       min-height: 100vh;
+      padding-bottom: 38px;
     }
     button, input, select, textarea { font: inherit; }
     button { cursor: pointer; }
@@ -60,6 +63,112 @@
       font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
+    }
+    .loading-rings {
+      position: relative;
+      width: 86px;
+      height: 86px;
+      margin: 0 auto 18px;
+    }
+    .loading-rings::before,
+    .loading-rings::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--gold);
+      border-right-color: rgba(234,210,130,0.55);
+      animation: spin 1.4s linear infinite;
+    }
+    .loading-rings::after {
+      inset: 12px;
+      border-top-color: rgba(255,255,255,0.72);
+      animation-duration: 1.9s;
+      animation-direction: reverse;
+    }
+    .loading-dot {
+      position: absolute;
+      inset: 31px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 26px rgba(201,168,76,0.65);
+      animation: pulse 1.25s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { transform: scale(0.78); opacity: 0.65; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 45;
+      display: none;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(13,27,62,0.96), rgba(24,43,85,0.92)),
+        radial-gradient(circle at 20% 20%, rgba(201,168,76,0.18), transparent 30%);
+      color: white;
+      padding: 20px;
+    }
+    .login-screen.show { display: grid; }
+    .login-card {
+      width: min(460px, 100%);
+      border: 1px solid rgba(201,168,76,0.32);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.24);
+      padding: 22px;
+      backdrop-filter: blur(14px);
+    }
+    .login-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 38px;
+      line-height: 1;
+    }
+    .login-title span { color: var(--gold-2); font-style: italic; }
+    .login-copy {
+      color: rgba(255,255,255,0.62);
+      margin: 10px 0 18px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    .login-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .login-tabs button {
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.82);
+      border-radius: 8px;
+      min-height: 40px;
+      font-weight: 700;
+    }
+    .login-tabs button.active {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy);
+    }
+    .login-card .field {
+      width: 100%;
+      background: rgba(255,255,255,0.95);
+    }
+    .login-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .login-error {
+      color: #ffb8b8;
+      min-height: 18px;
+      font-size: 13px;
     }
 
     .topbar {
@@ -225,6 +334,36 @@
       box-shadow: 0 10px 26px rgba(13,27,62,0.07);
       text-align: left;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+      animation: riseIn 0.5s ease both;
+    }
+    .kpi:nth-child(1) { --accent: var(--blue); animation-delay: 0.02s; }
+    .kpi:nth-child(2) { --accent: var(--green); animation-delay: 0.06s; }
+    .kpi:nth-child(3) { --accent: var(--violet); animation-delay: 0.1s; }
+    .kpi:nth-child(4) { --accent: var(--gold); animation-delay: 0.14s; }
+    .kpi:nth-child(5) { --accent: var(--cyan); animation-delay: 0.18s; }
+    .kpi:nth-child(6) { --accent: var(--rose); animation-delay: 0.22s; }
+    .kpi::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 4px;
+      background: var(--accent, var(--gold));
+    }
+    .kpi::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      right: -40px;
+      bottom: -42px;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent, var(--gold)) 16%, transparent);
+    }
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .kpi:hover {
       transform: translateY(-2px);
@@ -242,7 +381,7 @@
       font-size: 42px;
       line-height: 1;
       margin-top: 9px;
-      color: var(--navy);
+      color: var(--accent, var(--navy));
     }
     .kpi-sub {
       color: var(--muted);
@@ -459,6 +598,93 @@
       color: var(--muted);
       text-align: center;
     }
+    #resourceViewer iframe {
+      width: 100%;
+      height: min(68vh, 620px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f9fb;
+    }
+    .viewer-fallback {
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      color: var(--muted);
+      background: #f7f9fb;
+      text-align: center;
+      line-height: 1.6;
+    }
+    a.primary, a.ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+    .footer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 25;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: var(--navy);
+      color: rgba(255,255,255,0.68);
+      border-top: 1px solid rgba(201,168,76,0.24);
+      font-size: 12px;
+    }
+    .heart {
+      color: #ff2f45;
+      display: inline-block;
+      animation: heartbeat 1.05s ease-in-out infinite;
+      transform-origin: center;
+    }
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      16% { transform: scale(1.28); }
+      30% { transform: scale(0.94); }
+      44% { transform: scale(1.18); }
+      60% { transform: scale(1); }
+    }
+    .toast-wrap {
+      position: fixed;
+      right: 16px;
+      bottom: 52px;
+      z-index: 80;
+      display: grid;
+      gap: 10px;
+      width: min(360px, calc(100vw - 32px));
+    }
+    .toast {
+      border-radius: 8px;
+      border: 1px solid rgba(13,27,62,0.12);
+      background: white;
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+      display: grid;
+      gap: 3px;
+      animation: toastIn 0.25s ease both;
+    }
+    .toast-title {
+      font-weight: 800;
+      color: var(--navy);
+      font-size: 13px;
+    }
+    .toast-body {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .toast.error { border-left: 4px solid var(--red); }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.info { border-left: 4px solid var(--blue); }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     @media (max-width: 1040px) {
       .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -483,10 +709,27 @@
 
   <div class="loading" id="loading">
     <div class="loading-box">
+      <div class="loading-rings"><div class="loading-dot"></div></div>
       <div class="loading-logo">Cohort<span>Ops</span></div>
       <div class="loading-text" id="loadingText">Connecting to Google Sheets</div>
     </div>
   </div>
+
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-title">Cohort<span>Ops</span></div>
+      <div class="login-copy">Sign in to view the live portal. Admin mode enables controlled updates to Google Sheets.</div>
+      <div class="login-tabs">
+        <button class="active" id="loginViewer" type="button">Viewer</button>
+        <button id="loginAdmin" type="button">Admin</button>
+      </div>
+      <input class="field" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" />
+      <div class="login-actions">
+        <div class="login-error" id="loginError"></div>
+        <button class="primary" id="loginSubmit" type="button">Enter Portal</button>
+      </div>
+    </div>
+  </section>
 
   <header class="topbar">
     <div class="topbar-inner">
@@ -504,6 +747,7 @@
         <button data-panel="faculty">Faculty</button>
         <button data-panel="industry">Industry</button>
         <button data-panel="tasks">Tasks</button>
+        <button data-panel="resources">Resources</button>
       </nav>
       <div class="mode">
         <button class="active" id="viewerBtn">Viewer</button>
@@ -608,7 +852,29 @@
       </div>
       <div class="table-scroll"><table><thead><tr><th>Task</th><th>Due</th><th>Owner</th><th>Status</th><th>Outcome</th><th>Remarks</th><th></th></tr></thead><tbody id="taskRows"></tbody></table></div>
     </section>
+
+    <section id="resources" class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Resources</div>
+          <div class="panel-sub">Presentations, orientation decks, survey files, and reference documents.</div>
+        </div>
+        <button class="primary admin-only" data-create="resource">Add Resource</button>
+      </div>
+      <div class="toolbar">
+        <input class="field search" id="resourceSearch" placeholder="Search title, category, type, owner" />
+      </div>
+      <div class="grid" id="resourceGrid"></div>
+    </section>
   </main>
+
+  <footer class="footer">
+    <span>Made with</span>
+    <span class="heart">❤</span>
+    <span>~rhc · EE Lab, KLE-CTIE · Last updated <span id="footerUpdated">--</span></span>
+  </footer>
+
+  <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
 
   <dialog id="recordDialog">
     <form method="dialog" id="recordForm">
@@ -624,6 +890,36 @@
     </form>
   </dialog>
 
+  <dialog id="confirmDialog">
+    <form method="dialog">
+      <div class="modal-head">
+        <div class="modal-title" id="confirmTitle">Confirm</div>
+        <button class="icon-btn" value="cancel" aria-label="Close">x</button>
+      </div>
+      <div class="modal-body" style="display:block;">
+        <div id="confirmBody" style="line-height:1.55;color:var(--muted);"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" value="cancel">Cancel</button>
+        <button class="primary" id="confirmOk" value="default">Continue</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="resourceDialog">
+    <div class="modal-head">
+      <div class="modal-title" id="resourceTitle">Resource</div>
+      <button class="icon-btn" onclick="document.getElementById('resourceDialog').close()" aria-label="Close">x</button>
+    </div>
+    <div class="modal-body" style="display:block;">
+      <div id="resourceViewer"></div>
+    </div>
+    <div class="modal-actions">
+      <a class="ghost" id="resourceOpen" href="#" target="_blank" rel="noreferrer">Open</a>
+      <a class="primary" id="resourceDownload" href="#" download>Download</a>
+    </div>
+  </dialog>
+
   <script>
     const state = {
       config: {},
@@ -633,8 +929,11 @@
       faculty: [],
       industry: [],
       tasks: [],
+      resources: [],
       activePanel: "dashboard",
       admin: false,
+      role: "viewer",
+      authPassword: "",
       editType: "",
       editRecord: null
     };
@@ -648,31 +947,60 @@
       if (!GAS_URL || GAS_URL.includes("PASTE_DEPLOYED")) {
         return demoData();
       }
-      const url = `${GAS_URL}?action=${encodeURIComponent(action)}&t=${Date.now()}`;
       if (action === "getPortalData") {
-        const res = await fetch(url);
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action,
+            role: state.role,
+            password: state.authPassword,
+            ...payload
+          })
+        });
         if (!res.ok) throw new Error(`API ${res.status}`);
         return res.json();
       }
       const res = await fetch(GAS_URL, {
         method: "POST",
-        body: JSON.stringify({ action, ...payload })
+        body: JSON.stringify({
+          action,
+          role: state.role,
+          password: state.authPassword,
+          ...payload
+        })
       });
       if (!res.ok) throw new Error(`API ${res.status}`);
       return res.json();
     }
 
-    async function loadPortal() {
+    async function loadPortal(role = state.role, password = state.authPassword) {
       try {
+        state.role = role;
+        state.authPassword = password;
         const data = await api("getPortalData");
+        if (!data.ok) throw new Error(data.error || "Could not load portal");
         Object.assign(state, data);
+        state.role = role;
+        state.authPassword = password;
+        state.admin = role === "admin";
+        document.body.classList.toggle("admin", state.admin);
         applyConfig();
         renderAll();
+        setModeButtons();
+        $("#loginScreen").classList.remove("show");
+        showToast("Portal loaded", `${state.admin ? "Admin" : "Viewer"} access is active.`, "success");
       } catch (err) {
-        $("#loadingText").textContent = "Could not connect. Showing demo structure.";
-        Object.assign(state, demoData());
-        applyConfig();
-        renderAll();
+        if (!GAS_URL || GAS_URL.includes("PASTE_DEPLOYED")) {
+          $("#loadingText").textContent = "Demo mode";
+          Object.assign(state, demoData());
+          applyConfig();
+          renderAll();
+          showToast("Demo mode", "Connect the Apps Script URL to use live data.", "info");
+        } else {
+          $("#loginError").textContent = err.message || "Could not sign in.";
+          $("#loginScreen").classList.add("show");
+          showToast("Sign-in failed", err.message || "Check the password and try again.", "error");
+        }
       } finally {
         $("#loading").classList.add("hidden");
       }
@@ -686,7 +1014,9 @@
       $("#eyebrow").textContent = c.eyebrow || "EE Lab - KLE-CTIE - CSHINE";
       $("#heroTitle").innerHTML = `${escapeHtml(c.heroTitle || "E-Co-Op")} <em>${escapeHtml(c.heroEmphasis || "Portal")}</em>`;
       $("#heroCopy").textContent = c.heroCopy || "A live operating portal for teams, students, mentors, tasks, and program progress.";
-      $("#lastUpdated").textContent = c.lastUpdated || new Date().toLocaleString();
+      const updated = c.lastUpdated || "--";
+      $("#lastUpdated").textContent = updated;
+      $("#footerUpdated").textContent = updated;
     }
 
     function renderAll() {
@@ -697,6 +1027,7 @@
       renderFaculty();
       renderIndustry();
       renderTasks();
+      renderResources();
     }
 
     function renderKpis() {
@@ -707,7 +1038,8 @@
         ["Departments", k.totalDepartments || new Set(state.teams.map(t => t.department)).size, "Department view", "teams"],
         ["Faculty", k.totalFaculty || state.faculty.length, "Mentor directory", "faculty"],
         ["Industry", k.totalIndustry || state.industry.length, "Industry directory", "industry"],
-        ["Pending Tasks", k.pendingTasks || state.tasks.filter(t => norm(t.status) !== "complete").length, "Task tracker", "tasks"]
+        ["Pending Tasks", k.pendingTasks || state.tasks.filter(t => norm(t.status) !== "complete").length, "Task tracker", "tasks"],
+        ["Resources", k.totalResources || state.resources.length, "View and download", "resources"]
       ];
       $("#kpis").innerHTML = cards.map(([label, value, sub, panel]) => `
         <button class="kpi" data-open="${panel}">
@@ -804,6 +1136,51 @@
       }).join("") || `<tr><td colspan="7" class="empty">No tasks found.</td></tr>`;
     }
 
+    function renderResources() {
+      const q = norm($("#resourceSearch")?.value);
+      const rows = state.resources.filter(r => {
+        const text = norm([r.title, r.category, r.type, r.owner, r.status].join(" "));
+        return !q || text.includes(q);
+      });
+      $("#resourceGrid").innerHTML = rows.length ? rows.map(r => `
+        <article class="card">
+          <div class="card-top">
+            <div class="card-title">${escapeHtml(r.title || "Untitled Resource")}</div>
+            <span class="tag">${escapeHtml(r.type || "File")}</span>
+          </div>
+          <div class="card-body">
+            <div class="meta">
+              <div><b>Category:</b> ${escapeHtml(r.category || "-")}</div>
+              <div><b>Owner:</b> ${escapeHtml(r.owner || "-")}</div>
+              <div><b>Status:</b> ${escapeHtml(r.status || "Active")}</div>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="ghost" data-view-resource="${escapeHtml(r.resourceId)}">View</button>
+            <a class="primary" href="${escapeHtml(r.url)}" download>Download</a>
+            <span class="admin-only"><button class="ghost" data-edit="resource" data-id="${escapeHtml(r.resourceId)}">Edit</button></span>
+          </div>
+        </article>
+      `).join("") : `<div class="empty">No resources found.</div>`;
+    }
+
+    function viewResource(id) {
+      const resource = findRecord("resource", id);
+      if (!resource) return showToast("Resource not found", "The selected file is not available.", "error");
+      const url = resource.url || "#";
+      const type = norm(resource.type || url.split(".").pop());
+      $("#resourceTitle").textContent = resource.title || "Resource";
+      $("#resourceOpen").href = url;
+      $("#resourceDownload").href = url;
+      $("#resourceDownload").setAttribute("download", "");
+      if (type.includes("pdf") || norm(url).endsWith(".pdf")) {
+        $("#resourceViewer").innerHTML = `<iframe src="${escapeHtml(url)}" title="${escapeHtml(resource.title || "Resource")}"></iframe>`;
+      } else {
+        $("#resourceViewer").innerHTML = `<div class="viewer-fallback">Preview is limited for ${escapeHtml(resource.type || "this file type")} files in a browser. Use Open to view it in a new tab, or Download to save it.</div>`;
+      }
+      $("#resourceDialog").showModal();
+    }
+
     function openPanel(id) {
       state.activePanel = id;
       $$(".panel").forEach(p => p.classList.toggle("active", p.id === id));
@@ -812,15 +1189,66 @@
     }
 
     function setAdmin(on) {
-      if (on && !state.admin) {
-        const password = prompt("Enter admin password");
-        if (!password) return;
-        state.adminPassword = password;
+      if (on === state.admin) return;
+      showLogin(on ? "admin" : "viewer");
+    }
+
+    function setModeButtons() {
+      $("#viewerBtn").classList.toggle("active", !state.admin);
+      $("#adminBtn").classList.toggle("active", state.admin);
+    }
+
+    function showLogin(role = "viewer") {
+      state.loginRole = role;
+      $("#loginViewer").classList.toggle("active", role === "viewer");
+      $("#loginAdmin").classList.toggle("active", role === "admin");
+      $("#loginPassword").value = "";
+      $("#loginError").textContent = "";
+      $("#loginScreen").classList.add("show");
+      setTimeout(() => $("#loginPassword").focus(), 50);
+    }
+
+    async function submitLogin() {
+      const password = $("#loginPassword").value;
+      if (!password && GAS_URL && !GAS_URL.includes("PASTE_DEPLOYED")) {
+        $("#loginError").textContent = "Enter the password.";
+        return;
       }
-      state.admin = on;
-      document.body.classList.toggle("admin", on);
-      $("#viewerBtn").classList.toggle("active", !on);
-      $("#adminBtn").classList.toggle("active", on);
+      $("#loading").classList.remove("hidden");
+      $("#loadingText").textContent = "Connecting to Google Sheets";
+      await loadPortal(state.loginRole || "viewer", password);
+    }
+
+    function showToast(title, body, type = "info") {
+      const item = document.createElement("div");
+      item.className = `toast ${type}`;
+      item.innerHTML = `<div class="toast-title">${escapeHtml(title)}</div><div class="toast-body">${escapeHtml(body)}</div>`;
+      $("#toastWrap").appendChild(item);
+      setTimeout(() => item.remove(), 4200);
+    }
+
+    function confirmHtml(title, body) {
+      return new Promise(resolve => {
+        $("#confirmTitle").textContent = title;
+        $("#confirmBody").textContent = body;
+        const dialog = $("#confirmDialog");
+        const ok = $("#confirmOk");
+        const done = () => {
+          ok.removeEventListener("click", onOk);
+          dialog.removeEventListener("close", onClose);
+        };
+        const onOk = () => {
+          done();
+          resolve(true);
+        };
+        const onClose = () => {
+          done();
+          resolve(false);
+        };
+        ok.addEventListener("click", onOk, { once: true });
+        dialog.addEventListener("close", onClose, { once: true });
+        dialog.showModal();
+      });
     }
 
     function openEditor(type, record = {}) {
@@ -832,7 +1260,8 @@
         student: [["studentId","Student ID"],["teamId","Team ID"],["name","Name"],["srn","SRN"],["mobile","Mobile"],["department","Department"]],
         faculty: [["mentorId","Mentor ID"],["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
         industry: [["industryMentorId","Industry Mentor ID"],["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
-        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Due Date"],["owner","Owner"],["status","Status"],["outcomes","Outcomes","wide"],["remarks","Remarks","wide"]]
+        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Due Date"],["owner","Owner"],["status","Status"],["outcomes","Outcomes","wide"],["remarks","Remarks","wide"]],
+        resource: [["resourceId","Resource ID"],["title","Title"],["category","Category"],["type","Type"],["url","URL","wide"],["owner","Owner"],["status","Status"]]
       };
       $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
       $("#modalBody").innerHTML = schemas[type].map(([key, label, wide]) => {
@@ -847,26 +1276,30 @@
       evt.preventDefault();
       const form = new FormData($("#recordForm"));
       const record = Object.fromEntries(form.entries());
-      const result = await api("upsertRecord", { type: state.editType, record, id: getRecordId(state.editType, state.editRecord), password: state.adminPassword });
-      if (!result.ok) return alert(result.error || "Could not save record");
+      const result = await api("upsertRecord", { type: state.editType, record, id: getRecordId(state.editType, state.editRecord) });
+      if (!result.ok) return showToast("Could not save", result.error || "Please check the fields and try again.", "error");
       $("#recordDialog").close();
       Object.assign(state, await api("getPortalData"));
       renderAll();
+      showToast("Saved", "The portal and Google Sheet are updated.", "success");
     }
 
     async function deleteRecord(type, id) {
       if (!state.admin || !id) return;
-      if (!confirm("Delete this record?")) return;
-      const result = await api("deleteRecord", { type, id, password: state.adminPassword });
-      if (!result.ok) return alert(result.error || "Could not delete record");
+      const confirmed = await confirmHtml("Delete record", "This will remove the record from the Google Sheet. Continue?");
+      if (!confirmed) return;
+      const result = await api("deleteRecord", { type, id });
+      if (!result.ok) return showToast("Could not delete", result.error || "Please try again.", "error");
       Object.assign(state, await api("getPortalData"));
       renderAll();
+      showToast("Deleted", "The record was removed from Google Sheets.", "success");
     }
 
     async function syncPortal() {
       Object.assign(state, await api("getPortalData"));
       applyConfig();
       renderAll();
+      showToast("Synced", "Latest Google Sheets data is now visible.", "success");
     }
 
     function getRecordId(type, record) {
@@ -890,15 +1323,24 @@
       if (del) deleteRecord(del.dataset.delete, del.dataset.id);
       const action = evt.target.closest("[data-action]");
       if (action?.dataset.action === "sync") syncPortal();
+      const resource = evt.target.closest("[data-view-resource]");
+      if (resource) viewResource(resource.dataset.viewResource);
     });
     ["teamSearch","departmentFilter"].forEach(id => document.addEventListener("input", e => { if (e.target.id === id) renderTeams(); }));
     document.addEventListener("input", e => {
       if (e.target.id === "studentSearch") renderStudents();
       if (e.target.id === "taskSearch" || e.target.id === "statusFilter") renderTasks();
+      if (e.target.id === "resourceSearch") renderResources();
     });
     $("#viewerBtn").addEventListener("click", () => setAdmin(false));
     $("#adminBtn").addEventListener("click", () => setAdmin(true));
     $("#saveRecord").addEventListener("click", saveRecord);
+    $("#loginViewer").addEventListener("click", () => showLogin("viewer"));
+    $("#loginAdmin").addEventListener("click", () => showLogin("admin"));
+    $("#loginSubmit").addEventListener("click", submitLogin);
+    $("#loginPassword").addEventListener("keydown", evt => {
+      if (evt.key === "Enter") submitLogin();
+    });
 
     function demoData() {
       return {
@@ -921,17 +1363,26 @@
         ],
         faculty: [{ mentorId:"F001", name:"Geeta Sannakki", mobile:"9620161698", email:"", department:"Computer Science and Engineering" }],
         industry: [{ industryMentorId:"I001", name:"Vaibhav", industry:"EARTKey", background:"Electronics", phone:"", email:"", willingness:"" }],
-        tasks: [{ taskId:"K001", activity:"Faculty mentors orientation", dueDate:"03-07-2026", owner:"SK and NK", status:"Complete", outcomes:"Orientation completed", remarks:"" }]
+        tasks: [{ taskId:"K001", activity:"Faculty mentors orientation", dueDate:"03-Jul-2026", owner:"SK and NK", status:"Complete", outcomes:"Orientation completed", remarks:"" }],
+        resources: [
+          { resourceId:"R001", title:"Customer Insight Survey", category:"Survey", type:"PPTX", url:"assets/Customer_Insight_Survey.pptx", owner:"EE Lab", status:"Active" },
+          { resourceId:"R002", title:"Entrepreneurship Cohort Presentation", category:"Presentation", type:"PDF", url:"assets/Entrepreneurship_Cohort_Presentation.pdf", owner:"EE Lab", status:"Active" }
+        ]
       };
     }
 
     function findRecord(type, id) {
-      const lists = { team: state.teams, student: state.students, faculty: state.faculty, industry: state.industry, task: state.tasks };
-      const keys = { team:"teamId", student:"studentId", faculty:"mentorId", industry:"industryMentorId", task:"taskId" };
+      const lists = { team: state.teams, student: state.students, faculty: state.faculty, industry: state.industry, task: state.tasks, resource: state.resources };
+      const keys = { team:"teamId", student:"studentId", faculty:"mentorId", industry:"industryMentorId", task:"taskId", resource:"resourceId" };
       return (lists[type] || []).find(item => String(item[keys[type]]) === String(id));
     }
 
-    loadPortal();
+    if (!GAS_URL || GAS_URL.includes("PASTE_DEPLOYED")) {
+      loadPortal("viewer", "");
+    } else {
+      $("#loading").classList.add("hidden");
+      showLogin("viewer");
+    }
   </script>
 </body>
 </html>
