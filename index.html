@@ -1157,7 +1157,7 @@
       <div class="panel-head">
         <div>
           <div class="panel-title">Professional Reports</div>
-          <div class="panel-sub">Colorful executive PDF report generated from live Google Sheets data.</div>
+          <div class="panel-sub">Colorful executive PDF report generated from live E-Co-Op Workspace.</div>
         </div>
         <button class="primary" data-action="pdf-report">Download PDF</button>
       </div>
@@ -1517,7 +1517,7 @@
             <div class="report-cover-title">E-Co-Op <em>Innovation Cohort Report</em></div>
             <div class="report-cover-sub">Entrepreneurship Cohort Program - bridging academic projects with customer discovery, MVP readiness, mentorship, and innovation pathways.</div>
           </div>
-          <div class="report-cover-sub">Generated from live Google Sheets data · Last updated ${escapeHtml(updated)}</div>
+          <div class="report-cover-sub">Generated from live E-Co-Op Workspace · Last updated ${escapeHtml(updated)}</div>
         </div>
 
         <div class="report-kpis">
@@ -1735,25 +1735,25 @@
       $("#recordDialog").close();
       Object.assign(state, await api("getPortalData"));
       renderAll();
-      showToast("Saved", "The portal and Google Sheet are updated.", "success");
+      showToast("Saved", "The portal and E-Co-Op Workspace are updated.", "success");
     }
 
     async function deleteRecord(type, id) {
       if (!state.admin || !id) return;
-      const confirmed = await confirmHtml("Delete record", "This will remove the record from the Google Sheet. Continue?");
+      const confirmed = await confirmHtml("Delete record", "This will remove the record from the E-Co-Op Workspace. Continue?");
       if (!confirmed) return;
       const result = await api("deleteRecord", { type, id });
       if (!result.ok) return showToast("Could not delete", result.error || "Please try again.", "error");
       Object.assign(state, await api("getPortalData"));
       renderAll();
-      showToast("Deleted", "The record was removed from Google Sheets.", "success");
+      showToast("Deleted", "The record was removed from E-Co-Op Workspace.", "success");
     }
 
     async function syncPortal() {
       Object.assign(state, await api("getPortalData"));
       applyConfig();
       renderAll();
-      showToast("Synced", "Latest Google Sheets data is now visible.", "success");
+      showToast("Synced", "Latest E-Co-Op Workspace is now visible.", "success");
     }
 
     function getRecordId(type, record) {
