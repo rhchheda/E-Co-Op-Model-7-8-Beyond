@@ -108,7 +108,21 @@ function setupWorkbook() {
   }
 
   ss.setActiveSheet(ss.getSheetByName("Overview"));
-  SpreadsheetApp.getUi().alert("Setup complete. Review the Overview tab, then share the sheet as 'Anyone with the link: Viewer' so the portal website can read it.");
+  notifyDone_("Setup complete. Review the Overview tab, then share the sheet as 'Anyone with the link: Viewer' so the portal website can read it.");
+}
+
+// SpreadsheetApp.getUi() throws "Cannot call SpreadsheetApp.getUi() from
+// this context" depending on exactly how the script was invoked (this is
+// environment-dependent, not something the script controls) - never let a
+// missing UI fail the whole setup after all the real work already
+// succeeded. Falls back to the executions log, viewable from the Apps
+// Script editor (View > Executions) even when no dialog could be shown.
+function notifyDone_(message) {
+  try {
+    SpreadsheetApp.getUi().alert(message);
+  } catch (e) {
+    Logger.log(message);
+  }
 }
 
 function getOrCreateSheet(ss, name) {
@@ -141,11 +155,15 @@ function bandRows(sheet, startRow, numRows, numCols) {
 
 function protectHeader(sheet, numCols) {
   const range = sheet.getRange(1, 1, 1, numCols);
+  // Deliberately NOT calling Session.getEffectiveUser()/getActiveUser() here:
+  // that requires the userinfo.email OAuth scope, which isn't available on a
+  // plain first run of this script (no manifest with declared scopes exists
+  // yet at that point) and throws "Specified permissions are not sufficient".
+  // range.protect() without touching editors already defaults to
+  // "only the document owner can edit" for a script-created protection,
+  // which is exactly the "locked" behavior we want, with no extra scope.
   const protection = range.protect().setDescription("Header - locked");
   protection.setWarningOnly(false);
-  const me = Session.getEffectiveUser();
-  protection.removeEditors(protection.getEditors());
-  if (me && me.getEmail()) protection.addEditor(me);
 }
 
 function addDropdown(sheet, row, col, numRows, choices) {
