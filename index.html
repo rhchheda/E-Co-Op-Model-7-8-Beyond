@@ -1157,7 +1157,7 @@
       <div class="panel-head">
         <div>
           <div class="panel-title">Professional Reports</div>
-          <div class="panel-sub">Colorful executive PDF report generated from live E-Co-Op Workspace.</div>
+          <div class="panel-sub">Colorful executive PDF report generated from live Google Sheets data.</div>
         </div>
         <button class="primary" data-action="pdf-report">Download PDF</button>
       </div>
@@ -1267,15 +1267,20 @@
           method: "POST",
           body: JSON.stringify(request)
         });
-        if (!res.ok) throw new Error(`API ${res.status}`);
+        if (!res.ok) throw new Error(apiStatusMessage(res.status));
         return res.json();
       }
       const res = await fetch(GAS_URL, {
         method: "POST",
         body: JSON.stringify(request)
       });
-      if (!res.ok) throw new Error(`API ${res.status}`);
+      if (!res.ok) throw new Error(apiStatusMessage(res.status));
       return res.json();
+    }
+
+    function apiStatusMessage(status) {
+      if (status === 404) return "API 404: open the latest Apps Script web app URL, or update GAS_URL for static testing.";
+      return `API ${status}`;
     }
 
     async function loadPortal(role = state.role, password = state.authPassword) {
@@ -1480,18 +1485,34 @@
     function viewResource(id) {
       const resource = findRecord("resource", id);
       if (!resource) return showToast("Resource not found", "The selected file is not available.", "error");
-      const url = resource.url || "#";
-      const type = norm(resource.type || url.split(".").pop());
-      $("#resourceTitle").textContent = resource.title || "Resource";
-      $("#resourceOpen").href = url;
-      $("#resourceDownload").href = url;
-      $("#resourceDownload").setAttribute("download", "");
-      if (type.includes("pdf") || norm(url).endsWith(".pdf")) {
-        $("#resourceViewer").innerHTML = `<iframe src="${escapeHtml(url)}" title="${escapeHtml(resource.title || "Resource")}"></iframe>`;
-      } else {
-        $("#resourceViewer").innerHTML = `<div class="viewer-fallback">Preview is limited for ${escapeHtml(resource.type || "this file type")} files in a browser. Use Open to view it in a new tab, or Download to save it.</div>`;
+      const viewUrl = resourcePreviewUrl(resource);
+      if (!viewUrl) return showToast("Resource link missing", "Add a file URL before opening this resource.", "error");
+      const opened = window.open(viewUrl, "_blank", "noopener,noreferrer");
+      if (!opened) showToast("Popup blocked", "Allow popups for this portal, then click View again.", "error");
+    }
+
+    function resourcePreviewUrl(resource) {
+      const rawUrl = String(resource?.url || "").trim();
+      if (!rawUrl || rawUrl === "#") return "";
+      const driveId = googleDriveFileId(rawUrl);
+      if (driveId) return `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview`;
+
+      const lowerUrl = rawUrl.toLowerCase();
+      const type = norm(resource?.type || lowerUrl.split("?")[0].split(".").pop());
+      const isOffice = ["ppt", "pptx", "doc", "docx", "xls", "xlsx"].some(ext => type.includes(ext) || lowerUrl.endsWith(`.${ext}`));
+      if (isOffice && /^https?:\/\//i.test(rawUrl)) {
+        return `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=false`;
       }
-      $("#resourceDialog").showModal();
+      return rawUrl;
+    }
+
+    function googleDriveFileId(url) {
+      const text = String(url || "");
+      const fileMatch = text.match(/\/file\/d\/([^/]+)/);
+      if (fileMatch) return fileMatch[1];
+      const idMatch = text.match(/[?&]id=([^&]+)/);
+      if (idMatch) return idMatch[1];
+      return "";
     }
 
     function renderReports() {
@@ -1517,7 +1538,7 @@
             <div class="report-cover-title">E-Co-Op <em>Innovation Cohort Report</em></div>
             <div class="report-cover-sub">Entrepreneurship Cohort Program - bridging academic projects with customer discovery, MVP readiness, mentorship, and innovation pathways.</div>
           </div>
-          <div class="report-cover-sub">Generated from live E-Co-Op Workspace · Last updated ${escapeHtml(updated)}</div>
+          <div class="report-cover-sub">Generated from live Google Sheets data · Last updated ${escapeHtml(updated)}</div>
         </div>
 
         <div class="report-kpis">
@@ -1735,25 +1756,25 @@
       $("#recordDialog").close();
       Object.assign(state, await api("getPortalData"));
       renderAll();
-      showToast("Saved", "The portal and E-Co-Op Workspace are updated.", "success");
+      showToast("Saved", "The portal and Google Sheet are updated.", "success");
     }
 
     async function deleteRecord(type, id) {
       if (!state.admin || !id) return;
-      const confirmed = await confirmHtml("Delete record", "This will remove the record from the E-Co-Op Workspace. Continue?");
+      const confirmed = await confirmHtml("Delete record", "This will remove the record from the Google Sheet. Continue?");
       if (!confirmed) return;
       const result = await api("deleteRecord", { type, id });
       if (!result.ok) return showToast("Could not delete", result.error || "Please try again.", "error");
       Object.assign(state, await api("getPortalData"));
       renderAll();
-      showToast("Deleted", "The record was removed from E-Co-Op Workspace.", "success");
+      showToast("Deleted", "The record was removed from Google Sheets.", "success");
     }
 
     async function syncPortal() {
       Object.assign(state, await api("getPortalData"));
       applyConfig();
       renderAll();
-      showToast("Synced", "Latest E-Co-Op Workspace is now visible.", "success");
+      showToast("Synced", "Latest Google Sheets data is now visible.", "success");
     }
 
     function getRecordId(type, record) {
