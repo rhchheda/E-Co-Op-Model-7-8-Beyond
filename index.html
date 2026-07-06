@@ -985,7 +985,7 @@
     <div class="loading-box">
       <div class="loading-rings"><div class="loading-dot"></div></div>
       <div class="loading-logo">E-Co-Op <span>Portal</span></div>
-      <div class="loading-text" id="loadingText">Connecting to Google Sheets</div>
+      <div class="loading-text" id="loadingText">Connecting to E-Co-Op Workspace</div>
     </div>
   </div>
 
@@ -1046,7 +1046,7 @@
         </div>
       </div>
       <div class="live">
-        <div class="live-label">Live sheet update</div>
+        <div class="live-label">Live Program Sync</div>
         <div class="live-value" id="lastUpdated">Loading</div>
         <div class="live-program">
           <div><b>Focus</b> Customer insight · TRL readiness · MVP path</div>
@@ -1669,7 +1669,7 @@
         return;
       }
       $("#loading").classList.remove("hidden");
-      $("#loadingText").textContent = "Connecting to Google Sheets";
+      $("#loadingText").textContent = "Connecting to E-Co-Op Workspace";
       await loadPortal(state.loginRole || "viewer", password);
     }
 
