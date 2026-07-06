@@ -66,7 +66,9 @@ That's it — every page fetches live from `Teams`, `Tasks`, `Faculty Mentors`, 
 
 ## 3. Deploy to GitHub Pages
 
-From inside this `portal/` folder:
+**Already deployed:** this repo is pushed to [github.com/rhchheda/E-Co-Op-Model-7-8-Beyond](https://github.com/rhchheda/E-Co-Op-Model-7-8-Beyond), and GitHub Pages is live at **https://rhchheda.github.io/E-Co-Op-Model-7-8-Beyond/**.
+
+To redeploy elsewhere or understand how this was set up, from inside this `portal/` folder:
 
 ```bash
 git init
