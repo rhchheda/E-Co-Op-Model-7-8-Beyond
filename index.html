@@ -1331,9 +1331,16 @@
     }
 
     function applyHeroImage(url) {
-      const cleanUrl = String(url || "").trim();
+      const cleanUrl = normalizeHeroImageUrl(url);
       if (!cleanUrl) return;
       document.documentElement.style.setProperty("--hero-image", `url("${cleanUrl.replace(/"/g, "%22")}")`);
+    }
+
+    function normalizeHeroImageUrl(url) {
+      const cleanUrl = String(url || "").trim();
+      const match = cleanUrl.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/);
+      if (match) return `https://raw.githubusercontent.com/${match[1]}/${match[2]}/${match[3]}/${match[4]}`;
+      return cleanUrl;
     }
 
     function renderAll() {
