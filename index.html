@@ -1454,11 +1454,19 @@
         const cls = norm(t.status) === "complete" ? "" : norm(t.status) === "blocked" ? "blocked" : "pending";
         return `<tr>
           <td>${t.detailsUrl ? `<a href="${escapeHtml(t.detailsUrl)}" target="_blank" rel="noreferrer">${escapeHtml(t.activity)}</a>` : escapeHtml(t.activity)}</td>
-          <td>${escapeHtml(t.dueDate)}</td><td>${escapeHtml(t.owner)}</td><td><span class="status ${cls}">${escapeHtml(t.status || "Pending")}</span></td>
+          <td>${escapeHtml(taskScheduleText(t))}</td><td>${escapeHtml(t.owner)}</td><td><span class="status ${cls}">${escapeHtml(t.status || "Pending")}</span></td>
           <td>${escapeHtml(t.outcomes)}</td><td>${escapeHtml(t.remarks)}</td>
           <td><span class="admin-only"><button class="ghost" data-edit="task" data-id="${escapeHtml(t.taskId)}">Edit</button></span></td>
         </tr>`;
       }).join("") || `<tr><td colspan="7" class="empty">No tasks found.</td></tr>`;
+    }
+
+    function taskScheduleText(t) {
+      const start = t.scheduleStart || "";
+      const end = t.scheduleEnd || "";
+      if (start && end) return `${start} - ${end}`;
+      if (start) return start;
+      return t.dueDate || "";
     }
 
     function renderResources() {
@@ -1738,12 +1746,12 @@
       state.editType = type;
       state.editRecord = record;
       const schemas = {
-        team: [["teamId","Team ID"],["projectName","Project Name","wide"],["department","Department"],["facultyMentorName","Faculty Mentor"],["endUsers","End Users"],["status","Status"],["seventhSemTarget","7th Sem Target","wide"],["excitement","Excitement","wide"]],
-        student: [["studentId","Student ID"],["teamId","Team ID"],["name","Name"],["srn","SRN"],["mobile","Mobile"],["department","Department"]],
-        faculty: [["mentorId","Mentor ID"],["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
-        industry: [["industryMentorId","Industry Mentor ID"],["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
-        task: [["taskId","Task ID"],["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Schedule"],["owner","Owner"],["status","Status"],["outcomes","Automation / Outcomes","wide"],["remarks","Remarks","wide"]],
-        resource: [["resourceId","Resource ID"],["title","Title"],["category","Category"],["type","Type"],["url","URL","wide"],["owner","Owner"],["status","Status"]]
+        team: [["projectName","Project Name","wide"],["department","Department"],["facultyMentorName","Faculty Mentor"],["endUsers","End Users"],["status","Status"],["seventhSemTarget","7th Sem Target","wide"],["excitement","Excitement","wide"]],
+        student: [["teamId","Team ID"],["name","Name"],["srn","SRN"],["mobile","Mobile"],["department","Department"]],
+        faculty: [["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
+        industry: [["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
+        task: [["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Display Schedule"],["scheduleStart","Schedule Start"],["scheduleEnd","Schedule End"],["owner","Owner"],["status","Status"],["reminderRule","Reminder Rule","wide"],["automationStatus","Automation Status"],["outcomes","Automation / Outcomes","wide"],["remarks","Remarks","wide"]],
+        resource: [["title","Title"],["category","Category"],["type","Type"],["url","URL","wide"],["owner","Owner"],["status","Status"]]
       };
       $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
       $("#modalBody").innerHTML = schemas[type].map(([key, label, wide]) => {
