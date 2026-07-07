@@ -111,7 +111,7 @@
         linear-gradient(135deg, rgba(13,27,62,0.96), rgba(24,43,85,0.92)),
         radial-gradient(circle at 20% 20%, rgba(201,168,76,0.18), transparent 30%);
       color: white;
-      padding: 20px;
+      padding: 20px 20px 58px;
     }
     .login-screen.show { display: grid; }
     .login-card {
@@ -693,7 +693,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      z-index: 25;
+      z-index: 70;
       height: 38px;
       display: flex;
       align-items: center;
@@ -1181,12 +1181,12 @@
     <form method="dialog" id="recordForm">
       <div class="modal-head">
         <div class="modal-title" id="modalTitle">Edit Record</div>
-        <button class="icon-btn" value="cancel" aria-label="Close">x</button>
+        <button class="icon-btn" type="button" data-close-record aria-label="Close">x</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
       <div class="modal-actions">
-        <button class="ghost" value="cancel">Cancel</button>
-        <button class="primary" id="saveRecord" value="default">Save</button>
+        <button class="ghost" type="button" data-close-record>Cancel</button>
+        <button class="primary" type="button" id="saveRecord">Save</button>
       </div>
     </form>
   </dialog>
@@ -1510,7 +1510,7 @@
           </div>
           <div class="card-actions">
             <button class="ghost" data-view-resource="${escapeHtml(r.resourceId)}">View</button>
-            <a class="primary" href="${escapeHtml(r.url)}" download>Download</a>
+            <a class="primary" href="${escapeHtml(absoluteResourceUrl(r.url))}" download>Download</a>
             <span class="admin-only"><button class="ghost" data-edit="resource" data-id="${escapeHtml(r.resourceId)}">Edit</button></span>
           </div>
         </article>
@@ -1527,7 +1527,7 @@
     }
 
     function resourcePreviewUrl(resource) {
-      const rawUrl = String(resource?.url || "").trim();
+      const rawUrl = absoluteResourceUrl(resource?.url);
       if (!rawUrl || rawUrl === "#") return "";
       const driveId = googleDriveFileId(rawUrl);
       if (driveId) return `https://drive.google.com/file/d/${encodeURIComponent(driveId)}/preview`;
@@ -1539,6 +1539,17 @@
         return `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=false`;
       }
       return rawUrl;
+    }
+
+    function absoluteResourceUrl(url) {
+      const rawUrl = String(url || "").trim();
+      if (!rawUrl || rawUrl === "#") return "";
+      if (/^https?:\/\//i.test(rawUrl)) return rawUrl;
+      try {
+        return new URL(rawUrl, window.location.href).href;
+      } catch (err) {
+        return rawUrl;
+      }
     }
 
     function googleDriveFileId(url) {
@@ -1771,7 +1782,7 @@
         faculty: [["name","Name"],["mobile","Mobile"],["email","Email"],["department","Department"]],
         industry: [["name","Name"],["industry","Industry"],["background","Background"],["phone","Phone"],["email","Email"],["willingness","Willingness","wide"]],
         task: [["activity","Activity","wide"],["detailsUrl","Details URL","wide"],["dueDate","Display Schedule"],["scheduleStart","Schedule Start"],["scheduleEnd","Schedule End"],["owner","Owner"],["status","Status"],["reminderRule","Reminder Rule","wide"],["automationStatus","Automation Status"],["outcomes","Automation / Outcomes","wide"],["remarks","Remarks","wide"]],
-        resource: [["title","Title"],["category","Category"],["type","Type"],["url","URL","wide"],["owner","Owner"],["status","Status"]]
+        resource: [["title","Title"],["category","Category"],["type","Type"],["url","Full Public URL","wide"],["owner","Owner"],["status","Status"]]
       };
       $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
       $("#modalBody").innerHTML = schemas[type].map(([key, label, wide]) => {
@@ -1787,7 +1798,7 @@
       if (key === "scheduleStart" || key === "scheduleEnd") return "datetime-local";
       if (key === "email") return "email";
       if (key === "mobile" || key === "phone") return "tel";
-      if (key === "detailsUrl" || key === "url") return "url";
+      if (key === "detailsUrl") return "url";
       return "text";
     }
 
@@ -1871,6 +1882,7 @@
     $("#adminBtn").addEventListener("click", () => setAdmin(true));
     $("#logoutBtn").addEventListener("click", logout);
     $("#saveRecord").addEventListener("click", saveRecord);
+    $$("[data-close-record]").forEach(btn => btn.addEventListener("click", () => $("#recordDialog").close()));
     $("#loginViewer").addEventListener("click", () => showLogin("viewer"));
     $("#loginAdmin").addEventListener("click", () => showLogin("admin"));
     $("#loginSubmit").addEventListener("click", submitLogin);
@@ -1907,8 +1919,8 @@
           { taskId:"K003", activity:"MVP readiness and cohort review window", dueDate:"10-Aug-2026 to 25-Aug-2026", owner:"Program Coordination Team", status:"Pending", outcomes:"Reminder sequence for prototype progress, mentor review, final documentation, and report readiness.", remarks:"Trigger milestone reminders at start, midpoint, one week before close, and final day." }
         ],
         resources: [
-          { resourceId:"R001", title:"Customer Insight Survey", category:"Survey", type:"PPTX", url:"assets/Customer_Insight_Survey.pptx", owner:"C-SHINE", status:"Active" },
-          { resourceId:"R002", title:"Entrepreneurship Cohort Presentation", category:"Presentation", type:"PDF", url:"assets/Entrepreneurship_Cohort_Presentation.pdf", owner:"C-SHINE", status:"Active" }
+          { resourceId:"R001", title:"Customer Insight Survey", category:"Survey", type:"PPTX", url:"https://rhchheda.github.io/E-Co-Op-Model-7-8-Beyond/assets/Customer_Insight_Survey.pptx", owner:"C-SHINE", status:"Active" },
+          { resourceId:"R002", title:"Entrepreneurship Cohort Presentation", category:"Presentation", type:"PDF", url:"https://rhchheda.github.io/E-Co-Op-Model-7-8-Beyond/assets/Entrepreneurship_Cohort_Presentation.pdf", owner:"C-SHINE", status:"Active" }
         ]
       };
     }
