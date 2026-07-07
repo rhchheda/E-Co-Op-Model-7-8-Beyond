@@ -1466,7 +1466,27 @@
       const end = t.scheduleEnd || "";
       if (start && end) return `${start} - ${end}`;
       if (start) return start;
-      return t.dueDate || "";
+      return formatDisplaySchedule(t.dueDate || "");
+    }
+
+    function formatDisplaySchedule(value) {
+      const raw = String(value || "").trim();
+      if (!raw) return "";
+      const normalized = raw.replace(/(\d+)(st|nd|rd|th)/ig, "$1").replace(/@/g, " ").replace(/\./g, ":").replace(/\s+/g, " ");
+      const year = (normalized.match(/\b(20\d{2})\b/) || [,"2026"])[1];
+      const monthMatch = normalized.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\b/i);
+      const dayMatch = normalized.match(/\b(\d{1,2})\b/);
+      if (!monthMatch || !dayMatch) return raw;
+      const mon = monthMatch[1].slice(0,3).replace(/^./, ch => ch.toUpperCase());
+      const times = [...normalized.matchAll(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/ig)].map(m => formatTimeLabel(m[1], m[2] || "00", m[3]));
+      const date = `${String(dayMatch[1]).padStart(2,"0")}-${mon}-${year}`;
+      if (times.length >= 2) return `${date}, ${times[0]} - ${times[1]}`;
+      if (times.length === 1) return `${date}, ${times[0]}`;
+      return date;
+    }
+
+    function formatTimeLabel(hour, minute, ampm) {
+      return `${String(hour).padStart(2,"0")}:${minute} ${String(ampm).toUpperCase()}`;
     }
 
     function renderResources() {
@@ -1755,11 +1775,35 @@
       };
       $("#modalTitle").textContent = `${record && Object.keys(record).length ? "Edit" : "Add"} ${type}`;
       $("#modalBody").innerHTML = schemas[type].map(([key, label, wide]) => {
-        const val = escapeHtml(record[key] || "");
+        const inputType = fieldInputType(key);
+        const val = escapeHtml(inputType === "datetime-local" ? toDateTimeLocalValue(record[key]) : (record[key] || ""));
         const isLong = ["activity","outcomes","remarks","excitement","seventhSemTarget","willingness"].includes(key);
-        return `<label class="${wide || ""}">${escapeHtml(label)}${isLong ? `<textarea class="field" name="${key}">${val}</textarea>` : `<input class="field" name="${key}" value="${val}" />`}</label>`;
+        return `<label class="${wide || ""}">${escapeHtml(label)}${isLong ? `<textarea class="field" name="${key}">${val}</textarea>` : `<input class="field" type="${inputType}" name="${key}" value="${val}" />`}</label>`;
       }).join("");
       $("#recordDialog").showModal();
+    }
+
+    function fieldInputType(key) {
+      if (key === "scheduleStart" || key === "scheduleEnd") return "datetime-local";
+      if (key === "email") return "email";
+      if (key === "mobile" || key === "phone") return "tel";
+      if (key === "detailsUrl" || key === "url") return "url";
+      return "text";
+    }
+
+    function toDateTimeLocalValue(value) {
+      if (!value) return "";
+      const raw = String(value).trim();
+      const isoMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})[T\s](\d{2}):(\d{2})/);
+      if (isoMatch) return `${isoMatch[1]}-${isoMatch[2]}-${isoMatch[3]}T${isoMatch[4]}:${isoMatch[5]}`;
+      const match = raw.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4}),?\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if (!match) return "";
+      const months = {jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+      let hour = Number(match[4]);
+      const ampm = match[6].toUpperCase();
+      if (ampm === "PM" && hour < 12) hour += 12;
+      if (ampm === "AM" && hour === 12) hour = 0;
+      return `${match[3]}-${months[match[2].slice(0,3).toLowerCase()]}-${String(match[1]).padStart(2,"0")}T${String(hour).padStart(2,"0")}:${match[5]}`;
     }
 
     async function saveRecord(evt) {
